@@ -1,2 +1,5 @@
-# vscode-angular2-files
-vscode extension generating angular2 files with angular cli
+![](images/icon.png)
+
+# VS Code Angular2 Files
+
+This extension allows quickly generating angular 2 files using angular-cli in VS Code project.
