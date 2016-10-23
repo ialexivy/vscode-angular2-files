@@ -1,4 +1,4 @@
-![](images/icon.png)
+![](https://github.com/qwert789/vscode-angular2-files/raw/master/images/add-files.gif)
 
 # VS Code Angular2 Files
 
