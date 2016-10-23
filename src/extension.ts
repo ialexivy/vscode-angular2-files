@@ -1,16 +1,10 @@
 import { AngularCli } from './angular-cli-api';
 import { IPath } from './path';
 import { ExtensionContext, commands, window } from 'vscode';
-import { AddFiles } from './add-files';
-import { AddFilesExtended } from './add-files-extended';
 import * as vscode from 'vscode';
 
 export function activate(context: ExtensionContext) {
-  let terminalStack: vscode.Terminal[] = [];
-  const terminal = vscode.window.createTerminal('Angular CLI');
-  const angularCli: AngularCli = new AngularCli(terminal);
-  console.log('Congratulations, your extension is now active!');
-
+  let angularCli = new AngularCli();
 
   var addAngular2Component = commands.registerCommand('extension.addAngular2Component', (args) => {
     angularCli.showFileNameDialog(args, "component", "my-component.component.ts")
@@ -101,11 +95,4 @@ export function activate(context: ExtensionContext) {
   context.subscriptions.push(addAngular2Interface);
   context.subscriptions.push(addAngular2Enum);
   context.subscriptions.push(addAngular2Module);
-
-
-
-
-  function getLatestTerminal() {
-    return terminalStack[terminalStack.length - 1];
-  }
 }

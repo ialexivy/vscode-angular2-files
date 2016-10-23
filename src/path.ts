@@ -3,4 +3,5 @@ export interface IPath {
     dirName: string;
     dirPath: string;
     fullPath: string;
+    rootPath: string;
 }

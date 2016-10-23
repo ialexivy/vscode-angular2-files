@@ -62,35 +62,35 @@
             "explorer/context": [{
                 "when": "",
                 "command": "extension.addAngular2Component",
-                "group": "Add Files"
+                "group": "Angular2"
             }, {
                 "when": "",
                 "command": "extension.addAngular2Directive",
-                "group": "Add Files"
+                "group": "Angular2"
             }, {
                 "when": "",
                 "command": "extension.addAngular2Pipe",
-                "group": "Add Files"
+                "group": "Angular2"
             }, {
                 "when": "",
                 "command": "extension.addAngular2Service",
-                "group": "Add Files"
-            }, {
-                "when": "",
-                "command": "extension.addAngular2Class",
-                "group": "Add Files"
-            }, {
-                "when": "",
-                "command": "extension.addAngular2Interface",
-                "group": "Add Files"
-            }, {
-                "when": "",
-                "command": "extension.addAngular2Enum",
-                "group": "Add Files"
+                "group": "Angular2"
             }, {
                 "when": "",
                 "command": "extension.addAngular2Module",
-                "group": "Add Files"
+                "group": "Angular2"
+            }, {
+                "when": "",
+                "command": "extension.addAngular2Class",
+                "group": "Angular2 Essentials"
+            }, {
+                "when": "",
+                "command": "extension.addAngular2Interface",
+                "group": "Angular2 Essentials"
+            }, {
+                "when": "",
+                "command": "extension.addAngular2Enum",
+                "group": "Angular2 Essentials"
             }]
         }
     },
