@@ -8,6 +8,10 @@ This extension allows **quickly generating angular 2 files** in VS Code project.
 
 ## Changelog
 
+### 1.2.0
+
+* Fixed import declarations to closest module
+
 ### 1.1.0
 
 * **angular-cli** removed due to slowness

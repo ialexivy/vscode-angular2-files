@@ -71,6 +71,21 @@ export class AngularCli {
     return deferred.promise;
   }
 
+  public openFileInEditor(folderName): Q.Promise<TextEditor> {
+    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>();
+    var inputName: string = path.parse(folderName).name;;
+    var fullFilePath: string = path.join(folderName, `${inputName}.component.ts`);
+
+    workspace.openTextDocument(fullFilePath).then((textDocument) => {
+      if (!textDocument) { return; }
+      window.showTextDocument(textDocument).then((editor) => {
+        if (!editor) { return; }
+        deferred.resolve(editor);
+      });
+    });
+
+    return deferred.promise;
+  }
   // Create the new folder
   private createFolder(loc: IPath): Q.Promise<IPath> {
     const deferred: Q.Deferred<IPath> = Q.defer<IPath>();
@@ -197,10 +212,7 @@ export class AngularCli {
     return relativePath;
   }
 
-  public generateComponent = async (loc: IPath) => {
-    loc.dirName = loc.fileName;
-    loc.dirPath = path.join(loc.dirPath, loc.dirName);
-
+  private addDeclarationsToModule(loc: IPath, type: string) {
     let moduleFiles = [];
     this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
       return name.indexOf(".module") != -1;
@@ -208,7 +220,19 @@ export class AngularCli {
 
     //at least one module is there
     if (moduleFiles.length > 0) {
-      var module = moduleFiles[0];
+      //find closest module      
+      let module = moduleFiles[0];
+      let minDistance = Infinity;
+
+      for (let moduleFile of moduleFiles) {
+        let moduleDirPath = path.parse(moduleFile).dir;
+        let distance = Math.abs(loc.dirPath.length - moduleDirPath.length);
+        if (distance < minDistance) {
+          minDistance = distance;
+          module = moduleFile;
+        }
+      }
+
       fs.readFile(module, 'utf8', (err, data) => {
         if (err) {
           return console.log(err);
@@ -216,8 +240,8 @@ export class AngularCli {
 
         //relativePath
         let relativePath = this.getRelativePath(module, loc.dirPath);
-        let content = this.addToImport(data, loc.fileName, "component", relativePath);
-        content = this.addToDeclarations(content, loc.fileName, "component");
+        let content = this.addToImport(data, loc.fileName, type, relativePath);
+        content = this.addToDeclarations(content, loc.fileName, type);
 
         fs.writeFile(module, content, function (err) {
           err || console.log('Data replaced \n', content);
@@ -225,6 +249,13 @@ export class AngularCli {
 
       });
     }
+  }
+
+  public generateComponent = async (loc: IPath) => {
+    loc.dirName = loc.fileName;
+    loc.dirPath = path.join(loc.dirPath, loc.dirName);
+
+    this.addDeclarationsToModule(loc, "component");
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -251,30 +282,8 @@ export class AngularCli {
   }
 
   public generateDirective = async (loc: IPath) => {
-    let moduleFiles = [];
-    this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
-      return name.indexOf(".module") != -1;
-    })
 
-    //at least one module is there
-    if (moduleFiles.length > 0) {
-      var module = moduleFiles[0];
-      fs.readFile(module, 'utf8', (err, data) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        //relativePath
-        let relativePath = this.getRelativePath(module, loc.dirPath);
-        let content = this.addToImport(data, loc.fileName, "directive", relativePath);
-        content = this.addToDeclarations(content, loc.fileName, "directive");
-
-        fs.writeFile(module, content, function (err) {
-          err || console.log('Data replaced \n', content);
-        });
-
-      });
-    }
+    this.addDeclarationsToModule(loc, "directive");
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -292,30 +301,7 @@ export class AngularCli {
   }
 
   public generatePipe = async (loc: IPath) => {
-    let moduleFiles = [];
-    this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
-      return name.indexOf(".module") != -1;
-    })
-
-    //at least one module is there
-    if (moduleFiles.length > 0) {
-      var module = moduleFiles[0];
-      fs.readFile(module, 'utf8', (err, data) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        //relativePath
-        let relativePath = this.getRelativePath(module, loc.dirPath);
-        let content = this.addToImport(data, loc.fileName, "pipe", relativePath);
-        content = this.addToDeclarations(content, loc.fileName, "pipe");
-
-        fs.writeFile(module, content, function (err) {
-          err || console.log('Data replaced \n', content);
-        });
-
-      });
-    }
+    this.addDeclarationsToModule(loc, "pipe");
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -332,30 +318,7 @@ export class AngularCli {
     await this.createFiles(loc, files);
   }
   public generateService = async (loc: IPath) => {
-    let moduleFiles = [];
-    this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
-      return name.indexOf(".module") != -1;
-    })
-
-    //at least one module is there
-    if (moduleFiles.length > 0) {
-      var module = moduleFiles[0];
-      fs.readFile(module, 'utf8', (err, data) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        //relativePath
-        let relativePath = this.getRelativePath(module, loc.dirPath);
-        let content = this.addToImport(data, loc.fileName, "service", relativePath);
-        content = this.addToDeclarations(content, loc.fileName, "service");
-
-        fs.writeFile(module, content, function (err) {
-          err || console.log('Data replaced \n', content);
-        });
-
-      });
-    }
+    this.addDeclarationsToModule(loc, "service");
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -408,31 +371,6 @@ export class AngularCli {
   public generateModule = async (loc: IPath) => {
     loc.dirName = loc.fileName;
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
-
-    let moduleFiles = [];
-    this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
-      return name.indexOf(".module") != -1;
-    })
-
-    //at least one module is there
-    if (moduleFiles.length > 0) {
-      var module = moduleFiles[0];
-      fs.readFile(module, 'utf8', (err, data) => {
-        if (err) {
-          return console.log(err);
-        }
-
-        //relativePath
-        let relativePath = this.getRelativePath(module, loc.dirPath);
-        let content = this.addToImport(data, loc.fileName, "component", relativePath);
-        content = this.addToDeclarations(content, loc.fileName, "component");
-
-        fs.writeFile(module, content, function (err) {
-          err || console.log('Data replaced \n', content);
-        });
-
-      });
-    }
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [

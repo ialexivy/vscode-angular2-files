@@ -2,7 +2,7 @@
     "name": "vscode-angular2-files",
     "displayName": "Angular2 Files",
     "description": "Quickly add angular 2 files using angular-cli",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "icon": "images/icon.png",
     "publisher": "alexiv",
     "author": {
@@ -33,65 +33,83 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.addAngular2Component",
-            "title": "New Component (Angular2)"
-        }, {
-            "command": "extension.addAngular2Directive",
-            "title": "New Directive (Angular2)"
-        }, {
-            "command": "extension.addAngular2Pipe",
-            "title": "New Pipe (Angular2)"
-        }, {
-            "command": "extension.addAngular2Service",
-            "title": "New Service (Angular2)"
-        }, {
-            "command": "extension.addAngular2Class",
-            "title": "New Class (Angular2)"
-        }, {
-            "command": "extension.addAngular2Interface",
-            "title": "New Interface (Angular2)"
-        }, {
-            "command": "extension.addAngular2Enum",
-            "title": "New Enum (Angular2)"
-        }, {
-            "command": "extension.addAngular2Module",
-            "title": "New Module (Angular2)"
-        }],
-        "menus": {
-            "explorer/context": [{
-                "when": "",
+        "commands": [
+            {
                 "command": "extension.addAngular2Component",
-                "group": "Angular2"
-            }, {
-                "when": "",
+                "title": "New Component (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Directive",
-                "group": "Angular2"
-            }, {
-                "when": "",
+                "title": "New Directive (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Pipe",
-                "group": "Angular2"
-            }, {
-                "when": "",
+                "title": "New Pipe (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Service",
-                "group": "Angular2"
-            }, {
-                "when": "",
-                "command": "extension.addAngular2Module",
-                "group": "Angular2"
-            }, {
-                "when": "",
+                "title": "New Service (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Class",
-                "group": "Angular2 Essentials"
-            }, {
-                "when": "",
+                "title": "New Class (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Interface",
-                "group": "Angular2 Essentials"
-            }, {
-                "when": "",
+                "title": "New Interface (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Enum",
-                "group": "Angular2 Essentials"
-            }]
+                "title": "New Enum (Angular2)"
+            },
+            {
+                "command": "extension.addAngular2Module",
+                "title": "New Module (Angular2)"
+            }
+        ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Component",
+                    "group": "Angular2"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Directive",
+                    "group": "Angular2"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Pipe",
+                    "group": "Angular2"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Service",
+                    "group": "Angular2"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Module",
+                    "group": "Angular2"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Class",
+                    "group": "Angular2 Essentials"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Interface",
+                    "group": "Angular2 Essentials"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Enum",
+                    "group": "Angular2 Essentials"
+                }
+            ]
         }
     },
     "devDependencies": {
