@@ -226,7 +226,9 @@ export class AngularCli {
 
       for (let moduleFile of moduleFiles) {
         let moduleDirPath = path.parse(moduleFile).dir;
-        let distance = Math.abs(loc.dirPath.length - moduleDirPath.length);
+        let locPath = loc.dirPath.replace(loc.dirName, '');
+
+        let distance = Math.abs(locPath.length - moduleDirPath.length);
         if (distance < minDistance) {
           minDistance = distance;
           module = moduleFile;
