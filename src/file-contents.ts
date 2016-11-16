@@ -1,3 +1,4 @@
+import { IConfig } from './config';
 export class FileContents {
 
   private camelCase(input: string): string {
@@ -6,6 +7,14 @@ export class FileContents {
     });
   }
 
+  public componentSCSSContent(inputName: string): string {
+    var inputUpperCase: string;
+    inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    inputUpperCase = this.camelCase(inputUpperCase);
+
+    var componentContent: string = ``;
+    return componentContent;
+  }
 
   public componentCSSContent(inputName: string): string {
     var inputUpperCase: string;
@@ -28,7 +37,7 @@ export class FileContents {
   }
 
 
-  public componentContent(inputName: string): string {
+  public componentContent(inputName: string, config: IConfig): string {
     var inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     inputUpperCase = this.camelCase(inputUpperCase);
@@ -36,7 +45,7 @@ export class FileContents {
     var componentContent: string = `import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-${inputName}',
+  selector: '${config.prefix}-${inputName}',
   templateUrl: './${inputName}.component.html',
   styleUrls: ['./${inputName}.component.css']
 })
@@ -145,13 +154,13 @@ describe('Service: ${inputUpperCase}', () => {
   }
 
 
-  public directiveContent(inputName: string): string {
+  public directiveContent(inputName: string, config: IConfig): string {
     let upperName = this.toUpperCase(inputName);
 
     var content: string = `import { Directive } from '@angular/core';
 
 @Directive({
-  selector: '[app${upperName}]'
+  selector: '[${config.prefix}${upperName}]'
 })
 export class ${upperName}Directive {
 

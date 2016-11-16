@@ -8,6 +8,15 @@ This extension allows **quickly generating angular 2 files** in VS Code project.
 
 ## Changelog
 
+### 1.3.2
+
+* Angular-Files now supports angular-cli.json and you can use custom prefixes, different style extensions.
+* Note: if you not using angular-cli it is possible to add angular-cli.json to customize file generatiion.
+
+### 1.3.1
+
+* Fixed serivces was incorrectly imported to module declarations
+
 ### 1.3.0
 
 * Fixed import declarations to closest module
@@ -39,6 +48,11 @@ Menu Options  |
 New Class     | 
 New Interface |
 New Enum      | 
+
+** Override default configuration like app prefix and style:
+** Create a angular-cli.json (can be used without angular-cli):
+
+{"apps": [{ "root": "src", "prefix": "app" }],  "defaults": { "styleExt": "css" }}
 
 **The naming of the files as well as the (boilerplate) snippets are based on the [official Angular2 Style Guide](https://angular.io/docs/ts/latest/guide/style-guide.html)**
 

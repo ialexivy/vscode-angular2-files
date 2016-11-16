@@ -4,4 +4,5 @@ export interface IPath {
     dirPath: string;
     fullPath: string;
     rootPath: string;
+    params: string[];
 }

@@ -1,3 +1,4 @@
+import { IConfig } from './config';
 import { IPath } from './path';
 /// <reference path="../typings/tsd.d.ts" />
 import { window, workspace, TextEditor } from 'vscode';
@@ -13,7 +14,7 @@ export class AngularCli {
 
   // Show input prompt for folder name 
   // The imput is also used to create the files with the respective name as defined in the Angular2 style guide [https://angular.io/docs/ts/latest/guide/style-guide.html] 
-  public showFileNameDialog(args, type, defaultTypeName): Q.Promise<IPath> {
+  public showFileNameDialog(args, type, defaultTypeName) : Q.Promise<IPath> {
     const deferred: Q.Deferred<IPath> = Q.defer<IPath>();
     let rootPath = '';
     var clickedFolderPath: string;
@@ -46,6 +47,8 @@ export class AngularCli {
           if (!fileName) {
             deferred.reject('That\'s not a valid name! (no whitespaces or special characters)');
           } else {
+            let params = fileName.split(" ");
+
             let dirName = '';
             let dirPath = '';
             let fullPath = path.join(newFolderPath, fileName);
@@ -61,7 +64,8 @@ export class AngularCli {
               fileName: fileName,
               dirName: dirName,
               dirPath: dirPath,
-              rootPath: rootPath
+              rootPath: rootPath,
+              params: []
             });
           }
         },
@@ -213,6 +217,7 @@ export class AngularCli {
   }
 
   private addDeclarationsToModule(loc: IPath, type: string) {
+
     let moduleFiles = [];
     this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
       return name.indexOf(".module") != -1;
@@ -253,7 +258,7 @@ export class AngularCli {
     }
   }
 
-  public generateComponent = async (loc: IPath) => {
+  public generateComponent = async (loc: IPath, config: IConfig) => {
     loc.dirName = loc.fileName;
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
 
@@ -262,7 +267,7 @@ export class AngularCli {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.css`),
+        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.styleExt}`),
         content: this.fc.componentCSSContent(loc.fileName)
       },
       {
@@ -271,7 +276,7 @@ export class AngularCli {
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-        content: this.fc.componentContent(loc.fileName)
+        content: this.fc.componentContent(loc.fileName, config)
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
@@ -283,7 +288,7 @@ export class AngularCli {
     await this.createFiles(loc, files);
   }
 
-  public generateDirective = async (loc: IPath) => {
+  public generateDirective = async (loc: IPath, config: IConfig) => {
 
     this.addDeclarationsToModule(loc, "directive");
 
@@ -291,7 +296,7 @@ export class AngularCli {
     var files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.directive.ts`),
-        content: this.fc.directiveContent(loc.fileName)
+        content: this.fc.directiveContent(loc.fileName, config)
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.directive.spec.ts`),
@@ -302,7 +307,7 @@ export class AngularCli {
     await this.createFiles(loc, files);
   }
 
-  public generatePipe = async (loc: IPath) => {
+  public generatePipe = async (loc: IPath, config: IConfig) => {
     this.addDeclarationsToModule(loc, "pipe");
 
     // create an IFiles array including file names and contents
@@ -319,9 +324,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
-  public generateService = async (loc: IPath) => {
-    this.addDeclarationsToModule(loc, "service");
-
+  public generateService = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
@@ -337,7 +340,7 @@ export class AngularCli {
     await this.createFiles(loc, files);
   }
 
-  public generateClass = async (loc: IPath) => {
+  public generateClass = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
@@ -348,7 +351,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
-  public generateInterface = async (loc: IPath) => {
+  public generateInterface = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
@@ -359,7 +362,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
-  public generateEnum = async (loc: IPath) => {
+  public generateEnum = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
@@ -370,7 +373,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
-  public generateModule = async (loc: IPath) => {
+  public generateModule = async (loc: IPath, config: IConfig) => {
     loc.dirName = loc.fileName;
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
 
@@ -386,7 +389,7 @@ export class AngularCli {
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-        content: this.fc.componentContent(loc.fileName)
+        content: this.fc.componentContent(loc.fileName, config)
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
