@@ -20,9 +20,10 @@ export class AngularCli {
     var clickedFolderPath: string;
     if (args) {
       clickedFolderPath = args.fsPath
-      let srcInx = clickedFolderPath.indexOf("src");
+
+      let srcInx = clickedFolderPath.indexOf("app");
       if (srcInx != -1) {
-        rootPath = clickedFolderPath.substring(0, srcInx + "src".length);
+        rootPath = clickedFolderPath.substring(0, srcInx + "app".length);
       }
     }
     else {
@@ -225,6 +226,8 @@ export class AngularCli {
 
     //at least one module is there
     if (moduleFiles.length > 0) {
+      moduleFiles.sort((a:string, b:string) => a.length - b.length);
+
       //find closest module      
       let module = moduleFiles[0];
       let minDistance = Infinity;
@@ -362,6 +365,19 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
+  
+  public generateRoute= async (loc: IPath, config: IConfig) => {
+    // create an IFiles array including file names and contents
+    var files: IFiles[] = [
+      {
+        name: path.join(loc.dirPath, `${loc.fileName}.routing.ts`),
+        content: this.fc.routeContent(loc.fileName)
+      }
+    ];
+
+    await this.createFiles(loc, files);
+  }
+
   public generateEnum = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [

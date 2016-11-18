@@ -8,6 +8,12 @@ This extension allows **quickly generating angular 2 files** in VS Code project.
 
 ## Changelog
 
+### 1.3.3
+
+* Support for non angular-cli file-structure, code should reside in 'app' folder
+* Fixed import declarations to incorrect module
+* Added route class generat template
+ 
 ### 1.3.2
 
 * Angular-Files now supports angular-cli.json and you can use custom prefixes, different style extensions.

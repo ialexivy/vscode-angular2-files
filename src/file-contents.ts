@@ -239,6 +239,20 @@ describe('Pipe: ${upperName}e', () => {
     return content;
   }
 
+  public routeContent(inputName: string): string {
+    let upperName = this.toUpperCase(inputName);
+
+    var content: string = `import { Routes, RouterModule } from '@angular/router';
+
+const routes: Routes = [
+  {  },
+];
+
+export const ${upperName}Routes = RouterModule.forChild(routes);
+`;
+    return content;
+  }  
+
   public enumContent(inputName: string): string {
     let upperName = this.toUpperCase(inputName);
 

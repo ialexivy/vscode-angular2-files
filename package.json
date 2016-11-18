@@ -2,7 +2,7 @@
     "name": "vscode-angular2-files",
     "displayName": "Angular2 Files",
     "description": "Quickly add angular 2 files using angular-cli",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "icon": "images/icon.png",
     "publisher": "alexiv",
     "author": {
@@ -59,6 +59,10 @@
                 "title": "New Interface (Angular2)"
             },
             {
+                "command": "extension.addAngular2Route",
+                "title": "New Route (Angular2)"
+            },
+            {
                 "command": "extension.addAngular2Enum",
                 "title": "New Enum (Angular2)"
             },
@@ -102,6 +106,11 @@
                 {
                     "when": "",
                     "command": "extension.addAngular2Interface",
+                    "group": "Angular2 Essentials"
+                },
+                {
+                    "when": "",
+                    "command": "extension.addAngular2Route",
                     "group": "Angular2 Essentials"
                 },
                 {

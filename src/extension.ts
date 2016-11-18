@@ -73,6 +73,16 @@ export async function activate(context: ExtensionContext) {
       });
   });
 
+  var addAngular2Route = commands.registerCommand('extension.addAngular2Route', (args) => {
+    angularCli.showFileNameDialog(args, "route", "my-route.routing.ts")
+      .then((loc)=> angularCli.generateRoute(loc, config))
+      .catch((err) => {
+        if (err) {
+          window.showErrorMessage(err);
+        }
+      });
+  });  
+
   var addAngular2Enum = commands.registerCommand('extension.addAngular2Enum', (args) => {
     angularCli.showFileNameDialog(args, "enum", "my-enum.enum.ts")
       .then((loc)=> angularCli.generateEnum(loc, config))
