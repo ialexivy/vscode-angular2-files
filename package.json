@@ -1,8 +1,8 @@
 {
     "name": "vscode-angular2-files",
     "displayName": "Angular2 Files",
-    "description": "Quickly add angular 2 files using angular-cli",
-    "version": "1.3.3",
+    "description": "Quickly scaffold angular 2 file templates",
+    "version": "1.3.4",
     "icon": "images/icon.png",
     "publisher": "alexiv",
     "author": {
@@ -18,6 +18,12 @@
     "bugs": {
         "url": "https://github.com/qwert789/vscode-angular2-files/issues"
     },
+    "keywords": [
+        "Angular 2",
+        "TypeScript",
+        "Scaffolding",
+        "Templates"
+    ],
     "categories": [
         "Other",
         "Languages",

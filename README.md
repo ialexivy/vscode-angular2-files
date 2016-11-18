@@ -1,6 +1,6 @@
 # VS Code Angular2 Files
 
-This extension allows **quickly generating angular 2 files** in VS Code project.
+This extension allows **quickly scaffold angular 2 file templates** in VS Code project.
 
 > Inspired by angular-cli (https://github.com/angular/angular-cli)
 
@@ -8,7 +8,7 @@ This extension allows **quickly generating angular 2 files** in VS Code project.
 
 ## Changelog
 
-### 1.3.3
+### 1.3.4
 
 * Support for non angular-cli file-structure, code should reside in 'app' folder
 * Fixed import declarations to incorrect module
