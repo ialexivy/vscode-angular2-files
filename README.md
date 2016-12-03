@@ -8,6 +8,12 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.3.6
+* Fix incorrect extension in component generation
+
+### 1.3.5
+* CPU usage improvements 
+
 ### 1.3.4
 
 * Support for non angular-cli file-structure, code should reside in 'app' folder

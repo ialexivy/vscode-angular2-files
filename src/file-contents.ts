@@ -47,7 +47,7 @@ export class FileContents {
 @Component({
   selector: '${config.prefix}-${inputName}',
   templateUrl: './${inputName}.component.html',
-  styleUrls: ['./${inputName}.component.css']
+  styleUrls: ['./${inputName}.component.${config.styleExt}']
 })
 export class ${inputUpperCase}Component implements OnInit {
 
