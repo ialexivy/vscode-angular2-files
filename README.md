@@ -1,4 +1,4 @@
-# VS Code Angular2 Files
+# VS Code Angular Files
 
 This extension allows **quickly scaffold angular 2 file templates** in VS Code project.
 
@@ -7,6 +7,10 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 ![](https://github.com/qwert789/vscode-angular2-files/raw/master/images/add-files.gif)
 
 ## Changelog
+
+### 1.3.7
+* It's just angular
+* Module style ext fix - thanks to Sam Lin
 
 ### 1.3.6
 * Fix incorrect extension in component generation
@@ -66,7 +70,7 @@ New Enum      |
 
 {"apps": [{ "root": "src", "prefix": "app" }],  "defaults": { "styleExt": "css" }}
 
-**The naming of the files as well as the (boilerplate) snippets are based on the [official Angular2 Style Guide](https://angular.io/docs/ts/latest/guide/style-guide.html)**
+**The naming of the files as well as the (boilerplate) snippets are based on the [official Angular Style Guide](https://angular.io/docs/ts/latest/guide/style-guide.html)**
 
 ## Installation
 
@@ -74,7 +78,7 @@ New Enum      |
 2. Launch Code
 3. From the command palette `Ctrl`-`Shift`-`P` (Windows, Linux) or `Cmd`-`Shift`-`P` (OSX)
 4. Select `Install Extension`
-5. Type `angular2 files` and press enter
+5. Type `angular files` and press enter
 6. Reload Visual Studio Code
 
 # Disclaimer
