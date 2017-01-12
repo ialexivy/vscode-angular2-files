@@ -396,7 +396,7 @@ export class AngularCli {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.css`),
+        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.styleExt}`),
         content: this.fc.componentCSSContent(loc.fileName)
       },
       {
