@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.3.8
+* Fixed support for custom app structure
+
 ### 1.3.7
 * It's just angular
 * Module style ext fix - thanks to Sam Lin
@@ -20,7 +23,7 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ### 1.3.4
 
-* Support for non angular-cli file-structure, code should reside in 'app' folder
+* Support for non angular-cli file-structure, code should reside in 'app' folder by default 
 * Fixed import declarations to incorrect module
 * Added route class generat template
  
@@ -68,7 +71,19 @@ New Enum      |
 ** Override default configuration like app prefix and style:
 ** Create a angular-cli.json (can be used without angular-cli):
 
-{"apps": [{ "root": "src", "prefix": "app" }],  "defaults": { "styleExt": "css" }}
+```json
+{
+   "apps":[
+      {
+         "root":"src",
+         "prefix":"app"
+      }
+   ],
+   "defaults":{
+      "styleExt":"css"
+   }
+}
+```
 
 **The naming of the files as well as the (boilerplate) snippets are based on the [official Angular Style Guide](https://angular.io/docs/ts/latest/guide/style-guide.html)**
 

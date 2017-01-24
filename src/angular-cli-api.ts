@@ -16,15 +16,10 @@ export class AngularCli {
   // The imput is also used to create the files with the respective name as defined in the Angular2 style guide [https://angular.io/docs/ts/latest/guide/style-guide.html] 
   public showFileNameDialog(args, type, defaultTypeName) : Q.Promise<IPath> {
     const deferred: Q.Deferred<IPath> = Q.defer<IPath>();
-    let rootPath = '';
+
     var clickedFolderPath: string;
     if (args) {
       clickedFolderPath = args.fsPath
-
-      let srcInx = clickedFolderPath.indexOf("app");
-      if (srcInx != -1) {
-        rootPath = clickedFolderPath.substring(0, srcInx + "app".length);
-      }
     }
     else {
       if (!window.activeTextEditor) {
@@ -65,7 +60,7 @@ export class AngularCli {
               fileName: fileName,
               dirName: dirName,
               dirPath: dirPath,
-              rootPath: rootPath,
+              rootPath: newFolderPath,
               params: []
             });
           }
