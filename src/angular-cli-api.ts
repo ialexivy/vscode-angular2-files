@@ -1,12 +1,10 @@
-import { IConfig } from './config';
-import { IPath } from './path';
-/// <reference path="../typings/tsd.d.ts" />
+import { IConfig } from './models/config';
+import { IPath } from './models/path';
 import { window, workspace, TextEditor } from 'vscode';
 import { FileContents } from './file-contents';
-import { IFiles } from './file';
+import { IFiles } from './models/file';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Q from 'q';
 import * as vscode from 'vscode';
 
 export class AngularCli {
@@ -14,125 +12,123 @@ export class AngularCli {
 
   // Show input prompt for folder name 
   // The imput is also used to create the files with the respective name as defined in the Angular2 style guide [https://angular.io/docs/ts/latest/guide/style-guide.html] 
-  public showFileNameDialog(args, type, defaultTypeName) : Q.Promise<IPath> {
-    const deferred: Q.Deferred<IPath> = Q.defer<IPath>();
+  public showFileNameDialog(args, type, defaultTypeName): Promise<IPath> {
+    return new Promise((resolve, reject) => {
 
-    var clickedFolderPath: string;
-    if (args) {
-      clickedFolderPath = args.fsPath
-    }
-    else {
-      if (!window.activeTextEditor) {
-        deferred.reject('Please open a file first.. or just right-click on a file/folder and use the context menu!');
-        return deferred.promise;
-      } else {
-        clickedFolderPath = path.dirname(window.activeTextEditor.document.fileName);
+      var clickedFolderPath: string;
+      if (args) {
+        clickedFolderPath = args.fsPath
       }
-    }
-    var newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
+      else {
+        if (!window.activeTextEditor) {
+          reject('Please open a file first.. or just right-click on a file/folder and use the context menu!');
+        } else {
+          clickedFolderPath = path.dirname(window.activeTextEditor.document.fileName);
+        }
+      }
+      var newFolderPath: string = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
 
-    if (workspace.rootPath === undefined) {
-      deferred.reject('Please open a project first. Thanks! :-)');
-    }
-    else {
-      window.showInputBox({
-        prompt: `Type the name of the new ${type}`,
-        value: `${defaultTypeName}`
-      }).then(
-        (fileName) => {
-          if (!fileName) {
-            deferred.reject('That\'s not a valid name! (no whitespaces or special characters)');
-          } else {
-            let params = fileName.split(" ");
+      if (workspace.rootPath === undefined) {
+        reject('Please open a project first. Thanks! :-)');
+      }
+      else {
+        window.showInputBox({
+          prompt: `Type the name of the new ${type}`,
+          value: `${defaultTypeName}`
+        }).then(
+          (fileName) => {
+            if (!fileName) {
+              reject('That\'s not a valid name! (no whitespaces or special characters)');
+            } else {
+              let params = fileName.split(" ");
 
-            let dirName = '';
-            let dirPath = '';
-            let fullPath = path.join(newFolderPath, fileName);
-            if (fileName.indexOf("\\") != -1) {
-              let pathParts = fileName.split("\\");
-              dirName = pathParts[0];
-              fileName = pathParts[1];
+              let dirName = '';
+              let dirPath = '';
+              let fullPath = path.join(newFolderPath, fileName);
+              if (fileName.indexOf("\\") != -1) {
+                let pathParts = fileName.split("\\");
+                dirName = pathParts[0];
+                fileName = pathParts[1];
+              }
+              dirPath = path.join(newFolderPath, dirName);
+
+              resolve({
+                fullPath: fullPath,
+                fileName: fileName,
+                dirName: dirName,
+                dirPath: dirPath,
+                rootPath: newFolderPath,
+                params: []
+              });
             }
-            dirPath = path.join(newFolderPath, dirName);
-
-            deferred.resolve({
-              fullPath: fullPath,
-              fileName: fileName,
-              dirName: dirName,
-              dirPath: dirPath,
-              rootPath: newFolderPath,
-              params: []
-            });
-          }
-        },
-        (error) => console.error(error)
-        );
-    }
-    return deferred.promise;
+          },
+          (error) => console.error(error)
+          );
+      }
+    });
   }
 
-  public openFileInEditor(folderName): Q.Promise<TextEditor> {
-    const deferred: Q.Deferred<TextEditor> = Q.defer<TextEditor>();
-    var inputName: string = path.parse(folderName).name;;
-    var fullFilePath: string = path.join(folderName, `${inputName}.component.ts`);
+  public openFileInEditor(folderName): Promise<TextEditor> {
+    return new Promise<TextEditor>((resolve, reject) => {
 
-    workspace.openTextDocument(fullFilePath).then((textDocument) => {
-      if (!textDocument) { return; }
-      window.showTextDocument(textDocument).then((editor) => {
-        if (!editor) { return; }
-        deferred.resolve(editor);
+      var inputName: string = path.parse(folderName).name;;
+      var fullFilePath: string = path.join(folderName, `${inputName}.component.ts`);
+
+      workspace.openTextDocument(fullFilePath).then((textDocument) => {
+        if (!textDocument) { return; }
+        window.showTextDocument(textDocument).then((editor) => {
+          if (!editor) { return; }
+          resolve(editor);
+        });
       });
     });
-
-    return deferred.promise;
   }
+
   // Create the new folder
-  private createFolder(loc: IPath): Q.Promise<IPath> {
-    const deferred: Q.Deferred<IPath> = Q.defer<IPath>();
+  private createFolder(loc: IPath): Promise<IPath> {
+    return new Promise<IPath>((resolve, reject) => {
 
-    if (loc.dirName) {
-      fs.exists(loc.dirPath, (exists) => {
-        if (!exists) {
-          fs.mkdirSync(loc.dirPath);
-          deferred.resolve(loc);
-        } else {
-          deferred.reject('Folder already exists');
-        }
-      });
-    } else {
-      deferred.resolve(loc);
-    }
-
-    return deferred.promise;
+      if (loc.dirName) {
+        fs.exists(loc.dirPath, (exists) => {
+          if (!exists) {
+            fs.mkdirSync(loc.dirPath);
+            resolve(loc);
+          } else {
+            reject('Folder already exists');
+          }
+        });
+      } else {
+        resolve(loc);
+      }
+    });
   }
 
   // Get file contents and create the new files in the folder 
-  private createFiles(loc: IPath, files: IFiles[]): Q.Promise<string> {
-    const deferred: Q.Deferred<string> = Q.defer<string>();
+  private createFiles(loc: IPath, files: IFiles[]): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      // write files
+      this.writeFiles(files).then((errors) => {
+        if (errors.length > 0) {
+          window.showErrorMessage(`${errors.length} file(s) could not be created. I'm sorry :-(`);
+        }
+        else {
+          resolve(loc.dirPath);
+        }
+      });
 
-    // write files
-    this.writeFiles(files).then((errors) => {
-      if (errors.length > 0) {
-        window.showErrorMessage(`${errors.length} file(s) could not be created. I'm sorry :-(`);
-      }
-      else {
-        deferred.resolve(loc.dirPath);
-      }
     });
-
-    return deferred.promise;
   }
 
-  private writeFiles(files: IFiles[]): Q.Promise<string[]> {
-    const deferred: Q.Deferred<string[]> = Q.defer<string[]>();
-    var errors: string[] = [];
-    files.forEach(file => {
-      fs.writeFile(file.name, file.content, (err) => {
-        if (err) { errors.push(err.message) }
-        deferred.resolve(errors);
+  private writeFiles(files: IFiles[]): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+      var errors: string[] = [];
+      files.forEach(file => {
+        fs.writeFile(file.name, file.content, (err) => {
+          if (err) { errors.push(err.message) }
+          resolve(errors);
+        });
       });
     });
-    return deferred.promise;
   }
 
 
@@ -221,7 +217,7 @@ export class AngularCli {
 
     //at least one module is there
     if (moduleFiles.length > 0) {
-      moduleFiles.sort((a:string, b:string) => a.length - b.length);
+      moduleFiles.sort((a: string, b: string) => a.length - b.length);
 
       //find closest module      
       let module = moduleFiles[0];
@@ -322,6 +318,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
+
   public generateService = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -349,6 +346,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
+
   public generateInterface = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
@@ -360,8 +358,8 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
-  
-  public generateRoute= async (loc: IPath, config: IConfig) => {
+
+  public generateRoute = async (loc: IPath, config: IConfig) => {
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
@@ -384,6 +382,7 @@ export class AngularCli {
 
     await this.createFiles(loc, files);
   }
+
   public generateModule = async (loc: IPath, config: IConfig) => {
     loc.dirName = loc.fileName;
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
@@ -416,3 +415,4 @@ export class AngularCli {
     await this.createFiles(loc, files);
   }
 }
+

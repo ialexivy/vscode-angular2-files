@@ -1,4 +1,4 @@
-import { IConfig } from './config';
+import { IConfig } from './models/config';
 export class FileContents {
 
   private camelCase(input: string): string {
@@ -56,7 +56,8 @@ export class ${inputUpperCase}Component implements OnInit {
   ngOnInit() {
   }
 
-}`;
+}
+`;
     return componentContent;
   }
 
@@ -251,7 +252,7 @@ const routes: Routes = [
 export const ${upperName}Routes = RouterModule.forChild(routes);
 `;
     return content;
-  }  
+  }
 
   public enumContent(inputName: string): string {
     let upperName = this.toUpperCase(inputName);

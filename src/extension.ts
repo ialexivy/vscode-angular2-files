@@ -1,114 +1,37 @@
 import { ConfigurationManager } from './configuration-manager';
 import { AngularCli } from './angular-cli-api';
-import { IPath } from './path';
+import { IPath } from './models/path';
 import { ExtensionContext, commands, window, workspace } from 'vscode';
 import * as vscode from 'vscode';
 
 export async function activate(context: ExtensionContext) {
-  let angularCli = new AngularCli();
-  let configurationManager = new ConfigurationManager();
-  let config = await configurationManager.getConfig();
+  const angularCli = new AngularCli();
+  const cm = new ConfigurationManager();
+  let config = await cm.getConfig();
 
-  //update config
-  setInterval(async () => config = await configurationManager.getConfig(), 1000);
+  //watch and update on config file changes
+  cm.watchConfigFiles(async () => config = await cm.getConfig());
 
-  var addAngular2Component = commands.registerCommand('extension.addAngular2Component', (args) => {
-    angularCli.showFileNameDialog(args, "component", "my-component.component.ts")
-      .then((loc) => angularCli.generateComponent(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
+  const commandsMap = {
+    'extension.addAngular2Component': { template: "component", fileName: "my-component.component.ts", callback: angularCli.generateComponent },
+    'extension.addAngular2Directive': { template: "directive", fileName: "my-directive.directive.ts", callback: angularCli.generateDirective },
+    'extension.addAngular2Pipe': { template: "pipe", fileName: "my-pipe.pipe.ts", callback: angularCli.generatePipe },
+    'extension.addAngular2Service': { template: "service", fileName: "my-service.service.ts", callback: angularCli.generateService },
+    'extension.addAngular2Class': { template: "class", fileName: "my-class.class.ts", callback: angularCli.generateClass },
+    'extension.addAngular2Interface': { template: "interface", fileName: "my-interface.interface.ts", callback: angularCli.generateInterface },
+    'extension.addAngular2Route': { template: "route", fileName: "my-route.routing.ts", callback: angularCli.generateRoute },
+    'extension.addAngular2Enum': { template: "enum", fileName: "my-enum.enum.ts", callback: angularCli.generateEnum },
+    'extension.addAngular2Module': { template: "module", fileName: "my-module.module.ts", callback: angularCli.generateModule }
+  };
 
-  var addAngular2Directive = commands.registerCommand('extension.addAngular2Directive', (args) => {
-    angularCli.showFileNameDialog(args, "directive", "my-directive.directive.ts")
-      .then((loc) => angularCli.generateDirective(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
+  const showDynamicDialog = (args, template, fileName, callback) => {
+    angularCli.showFileNameDialog(args, template, fileName)
+      .then((loc) => callback(loc, config))
+      .catch((err) => window.showErrorMessage(err));
+  }
 
-
-  var addAngular2Pipe = commands.registerCommand('extension.addAngular2Pipe', (args) => {
-    angularCli.showFileNameDialog(args, "pipe", "my-pipe.pipe.ts")
-      .then((loc) => angularCli.generatePipe(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Service = commands.registerCommand('extension.addAngular2Service', (args) => {
-    angularCli.showFileNameDialog(args, "service", "my-service.service.ts")
-      .then((loc) => angularCli.generateService(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Class = commands.registerCommand('extension.addAngular2Class', (args) => {
-    angularCli.showFileNameDialog(args, "class", "my-class.class.ts")
-      .then((loc) => angularCli.generateClass(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Interface = commands.registerCommand('extension.addAngular2Interface', (args) => {
-    angularCli.showFileNameDialog(args, "interface", "my-interface.interface.ts")
-      .then((loc) => angularCli.generateInterface(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Route = commands.registerCommand('extension.addAngular2Route', (args) => {
-    angularCli.showFileNameDialog(args, "route", "my-route.routing.ts")
-      .then((loc) => angularCli.generateRoute(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Enum = commands.registerCommand('extension.addAngular2Enum', (args) => {
-    angularCli.showFileNameDialog(args, "enum", "my-enum.enum.ts")
-      .then((loc) => angularCli.generateEnum(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  var addAngular2Module = commands.registerCommand('extension.addAngular2Module', (args) => {
-    angularCli.showFileNameDialog(args, "module", "my-module.module.ts")
-      .then((loc) => angularCli.generateModule(loc, config))
-      .catch((err) => {
-        if (err) {
-          window.showErrorMessage(err);
-        }
-      });
-  });
-
-  context.subscriptions.push(addAngular2Component);
-  context.subscriptions.push(addAngular2Directive);
-  context.subscriptions.push(addAngular2Pipe);
-  context.subscriptions.push(addAngular2Service);
-  context.subscriptions.push(addAngular2Class);
-  context.subscriptions.push(addAngular2Interface);
-  context.subscriptions.push(addAngular2Enum);
-  context.subscriptions.push(addAngular2Module);
+  for (let [key, value] of Object.entries(commandsMap)) {
+    const command = commands.registerCommand(key, (args) => showDynamicDialog(args, value.template, value.fileName, value.callback));
+    context.subscriptions.push(command);
+  }
 }
