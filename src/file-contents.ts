@@ -36,18 +36,17 @@ export class FileContents {
     return componentContent;
   }
 
-
   public componentContent(inputName: string, config: IConfig): string {
     var inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
     inputUpperCase = this.camelCase(inputUpperCase);
 
-    var componentContent: string = `import { Component, OnInit } from '@angular/core';
+    var componentContent: string = `import { Component, OnInit${config.defaults.component.viewEncapsulation !== "Emulated" ? ', ViewEncapsulation' : ''}${config.defaults.component.changeDetection !== "Default" ? ', ChangeDetectionStrategy' : ''} } from '@angular/core';
 
 @Component({
-  selector: '${config.prefix}-${inputName}',
-  templateUrl: './${inputName}.component.html',
-  styleUrls: ['./${inputName}.component.${config.styleExt}']
+  selector: '${config.apps[0].prefix}-${inputName}',
+  ${config.defaults.component.inlineTemplate ? `template: \`\n   <p>\n  \t\t${inputName} Works!\n   </p>\n  \`` : `templateUrl: './${inputName}.component.html'`},
+  ${config.defaults.component.inlineStyle ? 'styles: []' : `styleUrls: ['./${inputName}.component.${config.defaults.styleExt}']`}${config.defaults.component.viewEncapsulation !== "Emulated" ? `,\n  encapsulation: ViewEncapsulation.${config.defaults.component.viewEncapsulation}` : ''}${config.defaults.component.changeDetection !== "Default" ? `,\n  changeDetection: ChangeDetectionStrategy.OnPush` : ''}
 })
 export class ${inputUpperCase}Component implements OnInit {
 
@@ -93,7 +92,8 @@ describe('${inputUpperCase}Component', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-});`;
+});
+`;
     return componentContent;
   }
 
@@ -161,7 +161,7 @@ describe('Service: ${inputUpperCase}', () => {
     var content: string = `import { Directive } from '@angular/core';
 
 @Directive({
-  selector: '[${config.prefix}${upperName}]'
+  selector: '[${config.apps[0].prefix}${upperName}]'
 })
 export class ${upperName}Directive {
 
@@ -181,7 +181,7 @@ import { ${upperName}Directive } from './${inputName}.directive';
 
 describe('Directive: ${upperName}', () => {
   it('should create an instance', () => {
-    let directive = new ${upperName}Directive();
+    const directive = new ${upperName}Directive();
     expect(directive).toBeTruthy();
   });
 });`;
@@ -228,14 +228,31 @@ describe('Pipe: ${upperName}e', () => {
     let upperName = this.toUpperCase(inputName);
 
     var content: string = `export class ${upperName} {
-}`;
+}
+`;
     return content;
   }
 
-  public interfaceContent(inputName: string): string {
+  public classTestContent(inputName: string): string {
+    var inputUpperCase: string;
+    inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
+    inputUpperCase = this.camelCase(inputUpperCase);
+
+    var classContent: string = `import {${inputUpperCase}} from './${inputName}';
+
+describe('${inputUpperCase}', () => {
+  it('should create an instance', () => {
+    expect(new ${inputUpperCase}()).toBeTruthy();
+  });
+});
+`;
+    return classContent;
+  }
+
+  public interfaceContent(inputName: string, config: IConfig): string {
     let upperName = this.toUpperCase(inputName);
 
-    var content: string = `export interface ${upperName} {
+    var content: string = `export interface ${config.defaults.interface.prefix}${upperName} {
 }`;
     return content;
   }

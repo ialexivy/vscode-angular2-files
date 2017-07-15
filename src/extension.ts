@@ -4,10 +4,16 @@ import { IPath } from './models/path';
 import { ExtensionContext, commands, window, workspace } from 'vscode';
 import * as vscode from 'vscode';
 
+const displayStatusMessage = (type: string, name: string, timeout = 2000) => window.setStatusBarMessage(`${type} ${name} was successfully generated`, timeout);
+const toTileCase = (str: string) => str.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+
 export async function activate(context: ExtensionContext) {
+  console.time('activate');
   const angularCli = new AngularCli();
   const cm = new ConfigurationManager();
-  let config = await cm.getConfig();
+  let config = {};
+
+  setImmediate(async () => config = await cm.getConfig());
 
   //watch and update on config file changes
   cm.watchConfigFiles(async () => config = await cm.getConfig());
@@ -26,7 +32,7 @@ export async function activate(context: ExtensionContext) {
 
   const showDynamicDialog = (args, template, fileName, callback) => {
     angularCli.showFileNameDialog(args, template, fileName)
-      .then((loc) => callback(loc, config))
+      .then((loc) => callback(loc, config).then(displayStatusMessage(toTileCase(template), loc.fileName)))
       .catch((err) => window.showErrorMessage(err));
   }
 
@@ -34,4 +40,5 @@ export async function activate(context: ExtensionContext) {
     const command = commands.registerCommand(key, (args) => showDynamicDialog(args, value.template, value.fileName, value.callback));
     context.subscriptions.push(command);
   }
+  console.timeEnd('activate');
 }

@@ -3,60 +3,53 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { config as defaultConfig } from './config/cli-config';
+import mergeDeep from './deep-merge';
 
 export class ConfigurationManager {
     private currentRootPath: string = null;
-    private config: Object = null;
     private readonly CONFIG_FILE = '.angular-cli.json';
 
     private readConfigFile(): Promise<Object> {
 
         return new Promise((resolve, reject) => {
-            if (vscode.workspace.rootPath != this.currentRootPath) {
-                vscode.workspace.findFiles(this.CONFIG_FILE, '', 1).then(
-                    // all good
-                    (result: vscode.Uri[]) => {
-                        //set root
-                        this.currentRootPath = vscode.workspace.rootPath;
+            vscode.workspace.findFiles(this.CONFIG_FILE, '', 1).then((result: vscode.Uri[]) => {
+                this.currentRootPath = vscode.workspace.rootPath;
 
-                        if (result.length > 0) {
-                            let filePath = result[0].fsPath;
+                if (result.length > 0) {
+                    let [{ 'fsPath': filePath }] = result;
+                    fs.readFile(filePath, 'utf8', (err, data) => {
+                        if (err) throw err;
 
-                            var obj;
-                            fs.readFile(filePath, 'utf8', (err, data) => {
-                                if (err) throw err;
-                                obj = JSON.parse(data);
-                                this.config = obj;
-                                resolve(this.config);
-                            });
+                        let config = {};
 
-                        } else {
-                            fs.writeFile(path.join(vscode.workspace.rootPath, this.CONFIG_FILE), JSON.stringify(defaultConfig, null, 2), (err) => { });
-                            this.config = defaultConfig;
-                            resolve(this.config);
+                        //prevent parsing issues
+                        try {
+                            config = JSON.parse(data);
+                        } catch (ex) {
+                            vscode.window.showErrorMessage('Invalid schema detected in .angular-cli.json, please correct and try again!')
+                            reject();
                         }
-                    },
-                    // rejected
-                    (reason: any) => reject(reason));
-            } else {
-                resolve(this.config);
-            }
+
+                        resolve(config);
+                    });
+
+                } else {
+                    fs.writeFile(path.join(vscode.workspace.rootPath, this.CONFIG_FILE), JSON.stringify(defaultConfig, null, 2), (err) => { });
+                    resolve(defaultConfig);
+                }
+            }, (reason: any) => reject(reason));
         });
     }
 
     private parseConfig(config): IConfig {
-        return {
-            rootPath: config.apps[0].root,
-            prefix: config.apps[0].prefix,
-            styleExt: config.defaults.styleExt
-        };
+        const projectConfig = mergeDeep({}, defaultConfig, config);
+        console.log(projectConfig);
+        return projectConfig;
     }
 
     public async getConfig() {
         let configFile = await this.readConfigFile();
-        let config = this.parseConfig(configFile);
-
-        return config;
+        return this.parseConfig(configFile);
     }
 
 

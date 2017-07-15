@@ -131,8 +131,6 @@ export class AngularCli {
     });
   }
 
-
-
   private findModulePathRecursive(dir, fileList, optionalFilterFunction) {
     if (!fileList) {
       console.error("Variable 'fileList' is undefined or NULL.");
@@ -253,37 +251,52 @@ export class AngularCli {
   }
 
   public generateComponent = async (loc: IPath, config: IConfig) => {
-    loc.dirName = loc.fileName;
+    if (!config.defaults.component.flat) {
+      loc.dirName = loc.fileName;
+    }
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
 
     this.addDeclarationsToModule(loc, "component");
 
     // create an IFiles array including file names and contents
-    var files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.styleExt}`),
+    let files: IFiles[] = [{
+      name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
+      content: this.fc.componentContent(loc.fileName, config)
+    }];
+
+    if (!config.defaults.component.inlineStyle) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
         content: this.fc.componentCSSContent(loc.fileName)
-      },
-      {
+      });
+    }
+
+    if (!config.defaults.component.inlineTemplate) {
+      files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.html`),
         content: this.fc.componentHTMLContent(loc.fileName)
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-        content: this.fc.componentContent(loc.fileName, config)
-      },
-      {
+      });
+    }
+
+    if (config.defaults.component.spec) {
+      files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
         content: this.fc.componentTestContent(loc.fileName)
-      }
-    ];
+      });
+    }
 
-    await this.createFolder(loc);
+    if (!config.defaults.component.flat) {
+      await this.createFolder(loc);
+    }
+
     await this.createFiles(loc, files);
   }
 
   public generateDirective = async (loc: IPath, config: IConfig) => {
-
+    if (!config.defaults.directive.flat) {
+      loc.dirName = loc.fileName;
+    }
+    loc.dirPath = path.join(loc.dirPath, loc.dirName);
     this.addDeclarationsToModule(loc, "directive");
 
     // create an IFiles array including file names and contents
@@ -291,17 +304,28 @@ export class AngularCli {
       {
         name: path.join(loc.dirPath, `${loc.fileName}.directive.ts`),
         content: this.fc.directiveContent(loc.fileName, config)
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.directive.spec.ts`),
-        content: this.fc.directiveTestContent(loc.fileName)
       }
     ];
+
+    if (config.defaults.directive.spec) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.directive.spec.ts`),
+        content: this.fc.directiveTestContent(loc.fileName)
+      });
+    }
+    if (!config.defaults.directive.flat) {
+      await this.createFolder(loc);
+    }
 
     await this.createFiles(loc, files);
   }
 
   public generatePipe = async (loc: IPath, config: IConfig) => {
+    if (!config.defaults.pipe.flat) {
+      loc.dirName = loc.fileName;
+    }
+    loc.dirPath = path.join(loc.dirPath, loc.dirName);
+
     this.addDeclarationsToModule(loc, "pipe");
 
     // create an IFiles array including file names and contents
@@ -309,13 +333,18 @@ export class AngularCli {
       {
         name: path.join(loc.dirPath, `${loc.fileName}.pipe.ts`),
         content: this.fc.pipeContent(loc.fileName)
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.pipe.spec.ts`),
-        content: this.fc.pipeTestContent(loc.fileName)
       }
     ];
 
+    if (config.defaults.pipe.spec) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.pipe.spec.ts`),
+        content: this.fc.pipeTestContent(loc.fileName)
+      });
+    }
+    if (!config.defaults.pipe.flat) {
+      await this.createFolder(loc);
+    }
     await this.createFiles(loc, files);
   }
 
@@ -325,13 +354,14 @@ export class AngularCli {
       {
         name: path.join(loc.dirPath, `${loc.fileName}.service.ts`),
         content: this.fc.serviceContent(loc.fileName)
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.service.spec.ts`),
-        content: this.fc.serviceTestContent(loc.fileName)
       }
     ];
-
+    if (config.defaults.service.spec) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.service.spec.ts`),
+        content: this.fc.serviceTestContent(loc.fileName)
+      });
+    }
     await this.createFiles(loc, files);
   }
 
@@ -343,7 +373,12 @@ export class AngularCli {
         content: this.fc.classContent(loc.fileName)
       }
     ];
-
+    if (config.defaults.class.spec) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.spec.ts`),
+        content: this.fc.classTestContent(loc.fileName)
+      });
+    }
     await this.createFiles(loc, files);
   }
 
@@ -352,7 +387,7 @@ export class AngularCli {
     var files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.ts`),
-        content: this.fc.interfaceContent(loc.fileName)
+        content: this.fc.interfaceContent(loc.fileName, config)
       }
     ];
 
@@ -384,13 +419,16 @@ export class AngularCli {
   }
 
   public generateModule = async (loc: IPath, config: IConfig) => {
-    loc.dirName = loc.fileName;
+
+    if (!config.defaults.module.flat) {
+      loc.dirName = loc.fileName;
+    }
     loc.dirPath = path.join(loc.dirPath, loc.dirName);
 
     // create an IFiles array including file names and contents
     var files: IFiles[] = [
       {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.styleExt}`),
+        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
         content: this.fc.componentCSSContent(loc.fileName)
       },
       {
@@ -402,16 +440,21 @@ export class AngularCli {
         content: this.fc.componentContent(loc.fileName, config)
       },
       {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
-        content: this.fc.componentTestContent(loc.fileName)
-      },
-      {
         name: path.join(loc.dirPath, `${loc.fileName}.module.ts`),
         content: this.fc.moduleContent(loc.fileName)
       }
     ];
+    if (config.defaults.module.spec) {
+      files.push({
+        name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
+        content: this.fc.componentTestContent(loc.fileName)
+      });
+    }
 
-    await this.createFolder(loc);
+    if (!config.defaults.module.flat) {
+      await this.createFolder(loc);
+    }
+
     await this.createFiles(loc, files);
   }
 }

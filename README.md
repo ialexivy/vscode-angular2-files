@@ -8,6 +8,50 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.3.9
+* Multiple enhancements and performance improvements
+* Added support for .angular-cli.json flexible file generation
+
+```json
+    "defaults": {
+        "styleExt": "css",
+        "component": {
+            "spec": true,
+            "inlineStyle": false,
+            "inlineTemplate": false,
+            "flat": false,
+            "changeDetection": "Default",
+            "viewEncapsulation": "Emulated"
+        },
+        "class": {
+            "spec": false
+        }, 
+        "directive": {
+            "flat": true,
+            "spec": true
+        },
+        "guard": {
+            "flat": true,
+            "spec": true
+        },
+        "interface": {
+            "prefix": ""
+        },
+        "module": {
+            "flat": false,
+            "spec": false
+        },
+        "pipe": {
+            "flat": true,
+            "spec": true
+        },
+        "service": {
+            "flat": true,
+            "spec": true
+        }
+    }
+```
+
 ### 1.3.8
 * Fixed support for custom app structure
 
