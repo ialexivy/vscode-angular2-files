@@ -34,7 +34,6 @@ export class ConfigurationManager {
                     });
 
                 } else {
-                    fs.writeFile(path.join(vscode.workspace.rootPath, this.CONFIG_FILE), JSON.stringify(defaultConfig, null, 2), (err) => { });
                     resolve(defaultConfig);
                 }
             }, (reason: any) => reject(reason));
