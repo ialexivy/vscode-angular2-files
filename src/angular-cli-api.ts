@@ -210,7 +210,7 @@ export class AngularCli {
 
     let moduleFiles = [];
     this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => {
-      return name.indexOf(".module") != -1;
+      return name.indexOf(".module.ts") != -1;
     })
 
     //at least one module is there
