@@ -189,7 +189,7 @@ export class AngularCli {
 
     let lastDeclareInx = before.length - 1;
 
-    while (before[lastDeclareInx] == ' ' || before[lastDeclareInx] == '\n' || before[lastDeclareInx] == ']') {
+    while (before[lastDeclareInx] == ' ' || before[lastDeclareInx] == ',' || before[lastDeclareInx] == '\n' || before[lastDeclareInx] == ']') {
       lastDeclareInx--;
     }
 

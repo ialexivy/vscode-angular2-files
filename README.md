@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.4.0
+* Fix trailing commas issue
+
 ### 1.3.10
 * Fix .angular-cli.json was automatically included in every non cli project
 * Fix add module declarations to *.module.ts  instead of *.module.js
