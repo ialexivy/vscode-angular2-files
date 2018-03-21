@@ -1,4 +1,4 @@
 export interface IFiles {
-    name: string;
-    content: string;
+  name: string;
+  content: string;
 }

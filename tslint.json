@@ -1,0 +1,10 @@
+{
+    "extends": "tslint-config-airbnb",
+    "rules": {
+        "max-line-length": {
+            "options": [
+                500
+            ]
+        }
+    }
+}
