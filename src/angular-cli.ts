@@ -5,8 +5,8 @@ import { FileContents } from './file-contents';
 import { IFiles } from './models/file';
 import * as fs from 'fs';
 import * as path from 'path';
+import { promisify } from './util';
 
-const { promisify } = require('util');
 const fsExists = promisify(fs.exists);
 const fsMkdir = promisify(fs.mkdir);
 const fsWriteFile = promisify(fs.writeFile);
