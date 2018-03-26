@@ -1,10 +1,9 @@
-import { ConfigurationManager } from './configuration-manager';
-import AngularCli from './Angular-Cli';
-import { IPath } from './models/path';
 import { ExtensionContext, commands, window, workspace } from 'vscode';
-
-const displayStatusMessage = (type: string, name: string, timeout = 2000) => window.setStatusBarMessage(`${type} ${name} was successfully generated`, timeout);
-const toTileCase = (str: string) => str.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+import AngularCli from './Angular-Cli';
+import { ConfigurationManager } from './configuration-manager';
+import { IPath } from './models/path';
+import { showFileNameDialog, displayStatusMessage } from './editor';
+import { toTileCase } from './formatting';
 
 export async function activate(context: ExtensionContext) {
   console.time('activate');
@@ -30,7 +29,7 @@ export async function activate(context: ExtensionContext) {
   };
 
   const showDynamicDialog = (args, template, fileName, callback) => {
-    angularCli.showFileNameDialog(args, template, fileName)
+    showFileNameDialog(args, template, fileName)
       .then(loc => callback.call(angularCli, loc, config)
         .then(displayStatusMessage(toTileCase(template), loc.fileName)))
       .catch(err => window.showErrorMessage(err));

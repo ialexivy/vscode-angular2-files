@@ -6,11 +6,9 @@ import { IPath } from './models/path';
 import { FileContents } from './file-contents';
 import { IFiles } from './models/file';
 import { promisify } from './promisify';
-import { camelCase, toUpperCase } from './formatting';
+import { toCamelCase, toUpperCase } from './formatting';
 import { createFiles, createFolder } from './ioutil';
 
-const fsExists = promisify(fs.exists);
-const fsMkdir = promisify(fs.mkdir);
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
 const fsStat = promisify(fs.stat);
@@ -18,51 +16,6 @@ const fsReadFile = promisify(fs.readFile);
 
 export default class AngularCli {
   constructor(private readonly fc = new FileContents()) { }
-
-  // Show input prompt for folder name 
-  async showFileNameDialog(args, type, defaultTypeName): Promise<IPath> {
-    let clickedFolderPath: string;
-    if (args) {
-      clickedFolderPath = args.fsPath;
-    } else {
-      if (!window.activeTextEditor) {
-        throw new Error('Please open a file first.. or just right-click on a file/folder and use the context menu!');
-      } else {
-        clickedFolderPath = path.dirname(window.activeTextEditor.document.fileName);
-      }
-    }
-
-    const newFolderPath = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
-
-    if (workspace.rootPath === undefined) {
-      throw new Error('Please open a project first. Thanks! :-)');
-    } else {
-      let fileName = await window.showInputBox({ prompt: `Type the name of the new ${type}`, value: `${defaultTypeName}` });
-
-      if (!fileName) {
-        throw new Error('That\'s not a valid name! (no whitespaces or special characters)');
-      } else {
-        let dirName = '';
-        let dirPath = '';
-
-        const fullPath = path.join(newFolderPath, fileName);
-
-        if (fileName.indexOf('\\') !== -1) {
-          [dirName, fileName] = fileName.split('\\');
-        }
-        dirPath = path.join(newFolderPath, dirName);
-
-        return {
-          fullPath,
-          fileName,
-          dirName,
-          dirPath,
-          rootPath: newFolderPath,
-          params: [],
-        };
-      }
-    }
-  }
 
   private async findModulePathRecursive(dir, fileList, optionalFilterFunction) {
     if (!fileList) {

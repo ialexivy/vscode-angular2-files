@@ -1,14 +1,11 @@
 import { IConfig } from './models/config';
+import { toCamelCase } from './formatting';
 export class FileContents {
-
-  private camelCase(input: string): string {
-    return input.replace(/-([a-z])/ig, (all, letter) => letter.toUpperCase());
-  }
 
   public componentSCSSContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const componentContent: string = ``;
     return componentContent;
@@ -17,7 +14,7 @@ export class FileContents {
   public componentCSSContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const componentContent: string = ``;
     return componentContent;
@@ -26,7 +23,7 @@ export class FileContents {
   public componentHTMLContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const componentContent: string = `<p>
   ${inputName} works!
@@ -37,7 +34,7 @@ export class FileContents {
   public componentContent(inputName: string, config: IConfig): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const componentContent = `import { Component, OnInit${config.defaults.component.viewEncapsulation !== 'Emulated' ? ', ViewEncapsulation' : ''}${config.defaults.component.changeDetection !== 'Default' ? ', ChangeDetectionStrategy' : ''} } from '@angular/core';
 
@@ -61,7 +58,7 @@ export class ${inputUpperCase}Component implements OnInit {
   public componentTestContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const componentContent: string = `/* tslint:disable:no-unused-variable */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
@@ -115,7 +112,7 @@ export class ${upperName}Module { }`;
   public serviceContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const content: string = `import { Injectable } from '@angular/core';
 
@@ -131,7 +128,7 @@ constructor() { }
   public serviceTestContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const content: string = `/* tslint:disable:no-unused-variable */
 
@@ -234,7 +231,7 @@ describe('Pipe: ${upperName}e', () => {
   public classTestContent(inputName: string): string {
     let inputUpperCase: string;
     inputUpperCase = inputName.charAt(0).toUpperCase() + inputName.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     const classContent: string = `import {${inputUpperCase}} from './${inputName}';
 
@@ -280,7 +277,7 @@ export const ${upperName}Routes = RouterModule.forChild(routes);
   private toUpperCase(input: string): string {
     let inputUpperCase: string;
     inputUpperCase = input.charAt(0).toUpperCase() + input.slice(1);
-    inputUpperCase = this.camelCase(inputUpperCase);
+    inputUpperCase = toCamelCase(inputUpperCase);
 
     return inputUpperCase;
   }
