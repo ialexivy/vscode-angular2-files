@@ -31,7 +31,8 @@ export async function activate(context: ExtensionContext) {
 
   const showDynamicDialog = (args, template, fileName, callback) => {
     angularCli.showFileNameDialog(args, template, fileName)
-      .then(loc => callback(loc, config).then(displayStatusMessage(toTileCase(template), loc.fileName)))
+      .then(loc => callback.call(angularCli, loc, config)
+        .then(displayStatusMessage(toTileCase(template), loc.fileName)))
       .catch(err => window.showErrorMessage(err));
   };
 

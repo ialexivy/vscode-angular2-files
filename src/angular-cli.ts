@@ -174,7 +174,7 @@ export default class AngularCli {
   private async addDeclarationsToModule(loc: IPath, type: string) {
 
     const moduleFiles = [];
-    this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => name.indexOf('.module.ts') !== -1);
+    await this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => name.indexOf('.module.ts') !== -1);
 
     // at least one module is there
     if (moduleFiles.length > 0) {
