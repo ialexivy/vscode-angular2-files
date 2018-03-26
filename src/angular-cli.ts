@@ -1,11 +1,13 @@
-import { IConfig } from './models/config';
-import { IPath } from './models/path';
 import { window, workspace, TextEditor, commands, Uri, WorkspaceEdit } from 'vscode';
-import { FileContents } from './file-contents';
-import { IFiles } from './models/file';
 import * as fs from 'fs';
 import * as path from 'path';
-import { promisify } from './util';
+import { IConfig } from './models/config';
+import { IPath } from './models/path';
+import { FileContents } from './file-contents';
+import { IFiles } from './models/file';
+import { promisify } from './promisify';
+import { camelCase, toUpperCase } from './formatting';
+import { createFiles, createFolder } from './ioutil';
 
 const fsExists = promisify(fs.exists);
 const fsMkdir = promisify(fs.mkdir);
@@ -62,44 +64,6 @@ export default class AngularCli {
     }
   }
 
-  async openFileInEditor(folderName) {
-    const inputName = path.parse(folderName).name;
-    const fullFilePath = path.join(folderName, `${inputName}.component.ts`);
-    const textDocument = await workspace.openTextDocument(fullFilePath);
-    return await window.showTextDocument(textDocument);
-  }
-
-  // Create the new folder
-  private async createFolder(loc: IPath) {
-    if (loc.dirName) {
-      const exists: boolean = await fsExists(loc.dirPath);
-      if (exists) {
-        throw new Error('Folder already exists');
-      }
-
-      await fsMkdir(loc.dirPath);
-    }
-
-    return loc;
-  }
-
-  // Get file contents and create the new files in the folder 
-  private async createFiles(loc: IPath, files: IFiles[]) {
-    try {
-      await this.writeFiles(files);
-    } catch (ex) {
-      await window.showErrorMessage(`File(s) could not be created. ${ex}`);
-    }
-
-    return loc.dirPath;
-  }
-
-  private async writeFiles(files: IFiles[]) {
-    const filesPromises: Promise<any>[] = files.map(file => fsWriteFile(file.name, file.content));
-
-    await Promise.all(filesPromises);
-  }
-
   private async findModulePathRecursive(dir, fileList, optionalFilterFunction) {
     if (!fileList) {
       console.error('Variable \'fileList\' is undefined or NULL.');
@@ -124,18 +88,9 @@ export default class AngularCli {
     }
   }
 
-  private camelCase(input: string) {
-    return input.replace(/-([a-z])/ig, (all, letter) => letter.toUpperCase());
-  }
-
-  private toUpperCase(input: string) {
-    const inputUpperCase = input.charAt(0).toUpperCase() + input.slice(1);
-    return this.camelCase(inputUpperCase);
-  }
-
   private addToImport(data: string, fileName: string, type: string, relativePath: string) {
-    const typeUpper = this.toUpperCase(type);
-    const fileNameUpper = this.toUpperCase(fileName);
+    const typeUpper = toUpperCase(type);
+    const fileNameUpper = toUpperCase(fileName);
 
     const lastImportInx = data.lastIndexOf('import ');
     const endOfLastImportInx = data.indexOf('\n', lastImportInx);
@@ -144,8 +99,8 @@ export default class AngularCli {
   }
 
   private addToDeclarations(data: string, fileName: string, type: string) {
-    const typeUpper = this.toUpperCase(type);
-    const fileNameUpper = this.toUpperCase(fileName);
+    const typeUpper = toUpperCase(type);
+    const fileNameUpper = toUpperCase(fileName);
 
     const declarationLastInx = data.indexOf(']', data.indexOf('declarations')) + 1;
 
@@ -242,10 +197,10 @@ export default class AngularCli {
     }
 
     if (!config.defaults.component.flat) {
-      await this.createFolder(loc);
+      await createFolder(loc);
     }
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateDirective(loc: IPath, config: IConfig) {
@@ -270,10 +225,10 @@ export default class AngularCli {
       });
     }
     if (!config.defaults.directive.flat) {
-      await this.createFolder(loc);
+      await createFolder(loc);
     }
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generatePipe(loc: IPath, config: IConfig) {
@@ -299,9 +254,9 @@ export default class AngularCli {
       });
     }
     if (!config.defaults.pipe.flat) {
-      await this.createFolder(loc);
+      await createFolder(loc);
     }
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateService(loc: IPath, config: IConfig) {
@@ -318,7 +273,7 @@ export default class AngularCli {
         content: this.fc.serviceTestContent(loc.fileName),
       });
     }
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateClass(loc: IPath, config: IConfig) {
@@ -335,7 +290,7 @@ export default class AngularCli {
         content: this.fc.classTestContent(loc.fileName),
       });
     }
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateInterface(loc: IPath, config: IConfig) {
@@ -347,7 +302,7 @@ export default class AngularCli {
       },
     ];
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateRoute(loc: IPath, config: IConfig) {
@@ -359,7 +314,7 @@ export default class AngularCli {
       },
     ];
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateEnum(loc: IPath, config: IConfig) {
@@ -371,7 +326,7 @@ export default class AngularCli {
       },
     ];
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 
   async generateModule(loc: IPath, config: IConfig) {
@@ -408,9 +363,9 @@ export default class AngularCli {
     }
 
     if (!config.defaults.module.flat) {
-      await this.createFolder(loc);
+      await createFolder(loc);
     }
 
-    await this.createFiles(loc, files);
+    await createFiles(loc, files);
   }
 }

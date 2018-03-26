@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { config as defaultConfig } from './config/cli-config';
 import deepMerge from './deep-merge';
-import { promisify } from './util';
+import { promisify } from './promisify';
 
 
 const readFileAsync = promisify(fs.readFile);
