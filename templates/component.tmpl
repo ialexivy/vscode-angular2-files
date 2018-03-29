@@ -1,0 +1,15 @@
+import { Component, OnInit${componentViewEncapsulation !== 'Emulated' ? ', ViewEncapsulation' : ''}${componentChangeDetection !== 'Default' ? ', ChangeDetectionStrategy' : ''} } from '@angular/core';
+
+@Component({
+  selector: '${appPrefix}-${inputName}',
+  ${componentInlineTemplate ? `template: \`\n   <p>\n  \t\t${inputName} Works!\n   </p>\n  \`` : `templateUrl: './${inputName}.component.html'`},
+  ${componentInlineStyle ? 'styles: []' : `styleUrls: ['./${inputName}.component.${defaultsStyleExt}']`}${componentViewEncapsulation !== 'Emulated' ? `,\n  encapsulation: ViewEncapsulation.${componentViewEncapsulation}` : ''}${componentChangeDetection !== 'Default' ? `,\n  changeDetection: ChangeDetectionStrategy.OnPush` : ''}
+})
+export class ${upperName}Component implements OnInit {
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+}

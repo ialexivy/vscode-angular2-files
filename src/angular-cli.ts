@@ -8,6 +8,7 @@ import { IFiles } from './models/file';
 import { promisify } from './promisify';
 import { toCamelCase, toUpperCase } from './formatting';
 import { createFiles, createFolder } from './ioutil';
+import { TemplateType } from './template-name';
 
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
@@ -15,7 +16,9 @@ const fsStat = promisify(fs.stat);
 const fsReadFile = promisify(fs.readFile);
 
 export default class AngularCli {
-  constructor(private readonly fc = new FileContents()) { }
+  constructor(private readonly fc = new FileContents()) {
+    fc.loadTemplates();
+  }
 
   private async findModulePathRecursive(dir, fileList, optionalFilterFunction) {
     if (!fileList) {
@@ -125,27 +128,27 @@ export default class AngularCli {
     // create an IFiles array including file names and contents
     const files: IFiles[] = [{
       name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-      content: this.fc.componentContent(loc.fileName, config),
+      content: this.fc.getTemplateContent(TemplateType.Component, config, loc.fileName),
     }];
 
     if (!config.defaults.component.inlineStyle) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
-        content: this.fc.componentCSSContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ComponentStyle, config, loc.fileName),
       });
     }
 
     if (!config.defaults.component.inlineTemplate) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.html`),
-        content: this.fc.componentHTMLContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ComponentHtml, config, loc.fileName),
       });
     }
 
     if (config.defaults.component.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
-        content: this.fc.componentTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ConponentSpec, config, loc.fileName),
       });
     }
 
@@ -167,14 +170,14 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.directive.ts`),
-        content: this.fc.directiveContent(loc.fileName, config),
+        content: this.fc.getTemplateContent(TemplateType.Directive, config, loc.fileName),
       },
     ];
 
     if (config.defaults.directive.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.directive.spec.ts`),
-        content: this.fc.directiveTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.DirectiveSpec, config, loc.fileName),
       });
     }
     if (!config.defaults.directive.flat) {
@@ -196,14 +199,14 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.pipe.ts`),
-        content: this.fc.pipeContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Pipe, config, loc.fileName),
       },
     ];
 
     if (config.defaults.pipe.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.pipe.spec.ts`),
-        content: this.fc.pipeTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.PipeSpec, config, loc.fileName),
       });
     }
     if (!config.defaults.pipe.flat) {
@@ -217,13 +220,13 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.service.ts`),
-        content: this.fc.serviceContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Service, config, loc.fileName),
       },
     ];
     if (config.defaults.service.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.service.spec.ts`),
-        content: this.fc.serviceTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ServiceSpec, config, loc.fileName),
       });
     }
     await createFiles(loc, files);
@@ -234,13 +237,13 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.ts`),
-        content: this.fc.classContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Class, config, loc.fileName),
       },
     ];
     if (config.defaults.class.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.spec.ts`),
-        content: this.fc.classTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ClassSpec, config, loc.fileName),
       });
     }
     await createFiles(loc, files);
@@ -251,7 +254,7 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.ts`),
-        content: this.fc.interfaceContent(loc.fileName, config),
+        content: this.fc.getTemplateContent(TemplateType.Inteface, config, loc.fileName),
       },
     ];
 
@@ -263,7 +266,7 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.routing.ts`),
-        content: this.fc.routeContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Route, config, loc.fileName),
       },
     ];
 
@@ -275,7 +278,7 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.enum.ts`),
-        content: this.fc.enumContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Enum, config, loc.fileName),
       },
     ];
 
@@ -293,25 +296,25 @@ export default class AngularCli {
     const files: IFiles[] = [
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
-        content: this.fc.componentCSSContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ComponentStyle, config, loc.fileName),
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.html`),
-        content: this.fc.componentHTMLContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ComponentHtml, config, loc.fileName),
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-        content: this.fc.componentContent(loc.fileName, config),
+        content: this.fc.getTemplateContent(TemplateType.Component, config, loc.fileName),
       },
       {
         name: path.join(loc.dirPath, `${loc.fileName}.module.ts`),
-        content: this.fc.moduleContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.Module, config, loc.fileName),
       },
     ];
     if (config.defaults.module.spec) {
       files.push({
         name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
-        content: this.fc.componentTestContent(loc.fileName),
+        content: this.fc.getTemplateContent(TemplateType.ConponentSpec, config, loc.fileName),
       });
     }
 

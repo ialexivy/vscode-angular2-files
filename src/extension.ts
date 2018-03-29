@@ -1,9 +1,9 @@
 import { ExtensionContext, commands, window, workspace } from 'vscode';
-import AngularCli from './Angular-Cli';
 import { ConfigurationManager } from './configuration-manager';
 import { IPath } from './models/path';
 import { showFileNameDialog, displayStatusMessage } from './editor';
 import { toTileCase } from './formatting';
+import AngularCli from './Angular-Cli';
 
 export async function activate(context: ExtensionContext) {
   console.time('activate');
