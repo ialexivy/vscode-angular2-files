@@ -4,7 +4,7 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 > Inspired by angular-cli (https://github.com/angular/angular-cli)
 
-![](https://github.com/qwert789/vscode-angular2-files/raw/master/images/add-files.gif)
+![](https://user-images.githubusercontent.com/1618071/38100803-0bb64a90-3387-11e8-80c9-b5c5883bfb38.gif)
 
 ## Changelog
 
