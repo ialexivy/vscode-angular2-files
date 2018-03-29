@@ -16,5 +16,3 @@ export enum TemplateType {
     Inteface = 'interface.tmpl',
     Route = 'route.tmpl',
 }
-
-

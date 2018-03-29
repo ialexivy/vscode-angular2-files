@@ -3,9 +3,8 @@ import { Uri, workspace, window } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { config as defaultConfig } from './config/cli-config';
-import deepMerge from './deep-merge';
 import { promisify } from './promisify';
-
+import deepMerge from './deep-merge';
 
 const readFileAsync = promisify(fs.readFile);
 

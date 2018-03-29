@@ -3,16 +3,14 @@
  * @param item
  * @returns {boolean}
  */
-export function isObject(item) {
-  return (item && typeof item === 'object' && !Array.isArray(item));
-}
+const isObject = item => (item && typeof item === 'object' && !Array.isArray(item));
 
 /**
  * Deep merge two objects.
  * @param target
  * @param ...sources
  */
-export default function mergeDeep(target, ...sources) {
+const mergeDeep = (target, ...sources) => {
   if (!sources.length) return target;
   const source = sources.shift();
 
@@ -28,4 +26,6 @@ export default function mergeDeep(target, ...sources) {
   }
 
   return mergeDeep(target, ...sources);
-}
+};
+
+export default mergeDeep;

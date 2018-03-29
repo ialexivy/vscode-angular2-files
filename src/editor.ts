@@ -12,7 +12,6 @@ export const openFileInEditor = async (folderName) => {
   return await window.showTextDocument(textDocument);
 };
 
-
 // Show input prompt for folder name 
 export const showFileNameDialog = async (args, type, defaultTypeName): Promise<IPath> => {
   let clickedFolderPath: string;
@@ -26,7 +25,7 @@ export const showFileNameDialog = async (args, type, defaultTypeName): Promise<I
     }
   }
 
-  const newFolderPath = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
+  const rootPath = fs.lstatSync(clickedFolderPath).isDirectory() ? clickedFolderPath : path.dirname(clickedFolderPath);
 
   if (workspace.rootPath === undefined) {
     throw new Error('Please open a project first. Thanks! :-)');
@@ -37,21 +36,20 @@ export const showFileNameDialog = async (args, type, defaultTypeName): Promise<I
       throw new Error('That\'s not a valid name! (no whitespaces or special characters)');
     } else {
       let dirName = '';
-      let dirPath = '';
 
-      const fullPath = path.join(newFolderPath, fileName);
+      const fullPath = path.join(rootPath, fileName);
 
       if (fileName.indexOf('\\') !== -1) {
         [dirName, fileName] = fileName.split('\\');
       }
-      dirPath = path.join(newFolderPath, dirName);
+      const dirPath = path.join(rootPath, dirName);
 
       return {
         fullPath,
         fileName,
         dirName,
         dirPath,
-        rootPath: newFolderPath,
+        rootPath,
         params: [],
       };
     }
