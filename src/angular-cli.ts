@@ -8,7 +8,7 @@ import { IFiles } from './models/file';
 import { promisify } from './promisify';
 import { toCamelCase, toUpperCase } from './formatting';
 import { createFiles, createFolder } from './ioutil';
-import { TemplateType } from './template-name';
+import { TemplateType } from './template-type';
 
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
@@ -16,6 +16,66 @@ const fsStat = promisify(fs.stat);
 const fsReadFile = promisify(fs.readFile);
 
 export default class AngularCli {
+
+  private resources = {
+    module: {
+      locDirName: (loc, config) => (!config.defaults.module.flat) ? loc.fileName : loc.dirName,
+      locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
+      files: [{ name: config => `component.${config.defaults.styleExt}`, type: TemplateType.ComponentStyle },
+      { name: config => `component.html`, type: TemplateType.ComponentHtml },
+      { name: config => `component.ts`, type: TemplateType.Component },
+      { name: config => `module.ts`, type: TemplateType.Module },
+      { name: config => `component.spec.ts`, type: TemplateType.ConponentSpec, condition: config => config.defaults.module.spec }],
+      createFolder: config => !config.defaults.module.flat,
+    },
+    enum: { files: [{ name: config => `enum.ts`, type: TemplateType.Enum }] },
+    route: { files: [{ name: config => `routing.ts`, type: TemplateType.Route }] },
+    interface: { files: [{ name: config => `ts`, type: TemplateType.Inteface }] },
+    class: {
+      files: [
+        { name: config => `ts`, type: TemplateType.Class },
+        { name: config => `spec.ts`, type: TemplateType.ClassSpec, condition: config => config.defaults.class.spec },
+      ],
+    },
+    service: {
+      files: [
+        { name: config => `service.ts`, type: TemplateType.Service },
+        { name: config => `service.spec.ts`, type: TemplateType.ServiceSpec, condition: config => config.defaults.service.spec },
+      ],
+    },
+    pipe: {
+      locDirName: (loc, config) => (!config.defaults.pipe.flat) ? loc.fileName : loc.dirName,
+      locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
+      files: [
+        { name: config => `pipe.ts`, type: TemplateType.Pipe },
+        { name: config => `pipe.spec.ts`, type: TemplateType.PipeSpec, condition: config => config.defaults.pipe.spec },
+      ],
+      createFolder: config => !config.defaults.pipe.flat,
+      declaration: 'pipe',
+    },
+    directive: {
+      locDirName: (loc, config) => (!config.defaults.directive.flat) ? loc.fileName : loc.dirName,
+      locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
+      declaration: 'directive',
+      files: [
+        { name: config => `directive.ts`, type: TemplateType.Directive },
+        { name: config => `directive.spec.ts`, type: TemplateType.DirectiveSpec, condition: config => config.defaults.directive.spec },
+      ],
+      createFolder: config => !config.defaults.directive.flat,
+    },
+    component: {
+      locDirName: (loc, config) => (!config.defaults.component.flat) ? loc.fileName : loc.dirName,
+      locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
+      declaration: 'component',
+      files: [{ name: config => `component.ts`, type: TemplateType.Component },
+      { name: config => `component.${config.defaults.styleExt}`, type: TemplateType.ComponentStyle, condition: config => !config.defaults.component.inlineStyle },
+      { name: config => `component.html`, type: TemplateType.ComponentHtml, condition: config => !config.defaults.component.inlineTemplate },
+      { name: config => `component.spec.ts`, type: TemplateType.ConponentSpec, condition: config => config.defaults.component.spec },
+      ],
+      createFolder: config => !config.defaults.component.flat,
+    },
+  };
+
   constructor(private readonly fc = new FileContents()) {
     fc.loadTemplates();
   }
@@ -117,208 +177,25 @@ export default class AngularCli {
     }
   }
 
-  async generateComponent(loc: IPath, config: IConfig) {
-    if (!config.defaults.component.flat) {
-      loc.dirName = loc.fileName;
-    }
-    loc.dirPath = path.join(loc.dirPath, loc.dirName);
+  async generateResources(name: string, loc: IPath, config: IConfig) {
+    const resource = this.resources[name];
 
-    this.addDeclarationsToModule(loc, 'component');
+    loc.dirName = resource.hasOwnProperty('locDirName') ? resource.locDirName(loc, config) : loc.dirName;
+    loc.dirPath = resource.hasOwnProperty('locDirPath') ? resource.locDirPath(loc, config) : loc.dirPath;
 
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [{
-      name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-      content: this.fc.getTemplateContent(TemplateType.Component, config, loc.fileName),
-    }];
-
-    if (!config.defaults.component.inlineStyle) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
-        content: this.fc.getTemplateContent(TemplateType.ComponentStyle, config, loc.fileName),
-      });
+    if (resource.hasOwnProperty('declaration') && resource.declaration) {
+      await this.addDeclarationsToModule(loc, resource.declaration);
     }
 
-    if (!config.defaults.component.inlineTemplate) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.component.html`),
-        content: this.fc.getTemplateContent(TemplateType.ComponentHtml, config, loc.fileName),
-      });
-    }
+    const files: IFiles[] = resource.files.filter(file => (file.condition) ? file.condition(config) : true).map((file) => {
+      return {
+        name: path.join(loc.dirPath, `${loc.fileName}.${file.name(config)}`),
+        content: this.fc.getTemplateContent(file.type, config, loc.fileName),
+      };
+    });
 
-    if (config.defaults.component.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.ConponentSpec, config, loc.fileName),
-      });
-    }
 
-    if (!config.defaults.component.flat) {
-      await createFolder(loc);
-    }
-
-    await createFiles(loc, files);
-  }
-
-  async generateDirective(loc: IPath, config: IConfig) {
-    if (!config.defaults.directive.flat) {
-      loc.dirName = loc.fileName;
-    }
-    loc.dirPath = path.join(loc.dirPath, loc.dirName);
-    this.addDeclarationsToModule(loc, 'directive');
-
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.directive.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Directive, config, loc.fileName),
-      },
-    ];
-
-    if (config.defaults.directive.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.directive.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.DirectiveSpec, config, loc.fileName),
-      });
-    }
-    if (!config.defaults.directive.flat) {
-      await createFolder(loc);
-    }
-
-    await createFiles(loc, files);
-  }
-
-  async generatePipe(loc: IPath, config: IConfig) {
-    if (!config.defaults.pipe.flat) {
-      loc.dirName = loc.fileName;
-    }
-    loc.dirPath = path.join(loc.dirPath, loc.dirName);
-
-    this.addDeclarationsToModule(loc, 'pipe');
-
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.pipe.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Pipe, config, loc.fileName),
-      },
-    ];
-
-    if (config.defaults.pipe.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.pipe.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.PipeSpec, config, loc.fileName),
-      });
-    }
-    if (!config.defaults.pipe.flat) {
-      await createFolder(loc);
-    }
-    await createFiles(loc, files);
-  }
-
-  async generateService(loc: IPath, config: IConfig) {
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.service.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Service, config, loc.fileName),
-      },
-    ];
-    if (config.defaults.service.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.service.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.ServiceSpec, config, loc.fileName),
-      });
-    }
-    await createFiles(loc, files);
-  }
-
-  async generateClass(loc: IPath, config: IConfig) {
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Class, config, loc.fileName),
-      },
-    ];
-    if (config.defaults.class.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.ClassSpec, config, loc.fileName),
-      });
-    }
-    await createFiles(loc, files);
-  }
-
-  async generateInterface(loc: IPath, config: IConfig) {
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Inteface, config, loc.fileName),
-      },
-    ];
-
-    await createFiles(loc, files);
-  }
-
-  async generateRoute(loc: IPath, config: IConfig) {
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.routing.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Route, config, loc.fileName),
-      },
-    ];
-
-    await createFiles(loc, files);
-  }
-
-  async generateEnum(loc: IPath, config: IConfig) {
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.enum.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Enum, config, loc.fileName),
-      },
-    ];
-
-    await createFiles(loc, files);
-  }
-
-  async generateModule(loc: IPath, config: IConfig) {
-
-    if (!config.defaults.module.flat) {
-      loc.dirName = loc.fileName;
-    }
-    loc.dirPath = path.join(loc.dirPath, loc.dirName);
-
-    // create an IFiles array including file names and contents
-    const files: IFiles[] = [
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.${config.defaults.styleExt}`),
-        content: this.fc.getTemplateContent(TemplateType.ComponentStyle, config, loc.fileName),
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.html`),
-        content: this.fc.getTemplateContent(TemplateType.ComponentHtml, config, loc.fileName),
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.component.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Component, config, loc.fileName),
-      },
-      {
-        name: path.join(loc.dirPath, `${loc.fileName}.module.ts`),
-        content: this.fc.getTemplateContent(TemplateType.Module, config, loc.fileName),
-      },
-    ];
-    if (config.defaults.module.spec) {
-      files.push({
-        name: path.join(loc.dirPath, `${loc.fileName}.component.spec.ts`),
-        content: this.fc.getTemplateContent(TemplateType.ConponentSpec, config, loc.fileName),
-      });
-    }
-
-    if (!config.defaults.module.flat) {
+    if (resource.hasOwnProperty('createFolder') && resource.createFolder(config)) {
       await createFolder(loc);
     }
 
