@@ -1,11 +1,9 @@
-import { ConfigurationManager } from './configuration-manager';
-import { AngularCli } from './angular-cli-api';
-import { IPath } from './models/path';
 import { ExtensionContext, commands, window, workspace } from 'vscode';
-import * as vscode from 'vscode';
-
-const displayStatusMessage = (type: string, name: string, timeout = 2000) => window.setStatusBarMessage(`${type} ${name} was successfully generated`, timeout);
-const toTileCase = (str: string) => str.replace(/\w\S*/g, (txt) => { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+import { ConfigurationManager } from './configuration-manager';
+import { IPath } from './models/path';
+import { showFileNameDialog, displayStatusMessage } from './editor';
+import { toTileCase } from './formatting';
+import AngularCli from './Angular-Cli';
 
 export async function activate(context: ExtensionContext) {
   console.time('activate');
@@ -15,29 +13,30 @@ export async function activate(context: ExtensionContext) {
 
   setImmediate(async () => config = await cm.getConfig());
 
-  //watch and update on config file changes
+  // watch and update on config file changes
   cm.watchConfigFiles(async () => config = await cm.getConfig());
 
   const commandsMap = {
-    'extension.addAngular2Component': { template: "component", fileName: "my-component.component.ts", callback: angularCli.generateComponent },
-    'extension.addAngular2Directive': { template: "directive", fileName: "my-directive.directive.ts", callback: angularCli.generateDirective },
-    'extension.addAngular2Pipe': { template: "pipe", fileName: "my-pipe.pipe.ts", callback: angularCli.generatePipe },
-    'extension.addAngular2Service': { template: "service", fileName: "my-service.service.ts", callback: angularCli.generateService },
-    'extension.addAngular2Class': { template: "class", fileName: "my-class.class.ts", callback: angularCli.generateClass },
-    'extension.addAngular2Interface': { template: "interface", fileName: "my-interface.interface.ts", callback: angularCli.generateInterface },
-    'extension.addAngular2Route': { template: "route", fileName: "my-route.routing.ts", callback: angularCli.generateRoute },
-    'extension.addAngular2Enum': { template: "enum", fileName: "my-enum.enum.ts", callback: angularCli.generateEnum },
-    'extension.addAngular2Module': { template: "module", fileName: "my-module.module.ts", callback: angularCli.generateModule }
+    'extension.addAngular2Component': { template: 'component', fileName: 'my-component.component.ts', resource: 'component' },
+    'extension.addAngular2Directive': { template: 'directive', fileName: 'my-directive.directive.ts', resource: 'directive' },
+    'extension.addAngular2Pipe': { template: 'pipe', fileName: 'my-pipe.pipe.ts', resource: 'pipe' },
+    'extension.addAngular2Service': { template: 'service', fileName: 'my-service.service.ts', resource: 'service' },
+    'extension.addAngular2Class': { template: 'class', fileName: 'my-class.class.ts', resource: 'class' },
+    'extension.addAngular2Interface': { template: 'interface', fileName: 'my-interface.interface.ts', resource: 'interface' },
+    'extension.addAngular2Route': { template: 'route', fileName: 'my-route.routing.ts', resource: 'route' },
+    'extension.addAngular2Enum': { template: 'enum', fileName: 'my-enum.enum.ts', resource: 'enum' },
+    'extension.addAngular2Module': { template: 'module', fileName: 'my-module.module.ts', resource: 'module' },
   };
 
-  const showDynamicDialog = (args, template, fileName, callback) => {
-    angularCli.showFileNameDialog(args, template, fileName)
-      .then((loc) => callback(loc, config).then(displayStatusMessage(toTileCase(template), loc.fileName)))
-      .catch((err) => window.showErrorMessage(err));
-  }
+  const showDynamicDialog = (args, template, fileName, resource) => {
+    showFileNameDialog(args, template, fileName)
+      .then(loc => angularCli.generateResources.call(angularCli, resource, loc, config)
+        .then(displayStatusMessage(toTileCase(template), loc.fileName)))
+      .catch(err => window.showErrorMessage(err));
+  };
 
-  for (let [key, value] of Object.entries(commandsMap)) {
-    const command = commands.registerCommand(key, (args) => showDynamicDialog(args, value.template, value.fileName, value.callback));
+  for (const [key, value] of Object.entries(commandsMap)) {
+    const command = commands.registerCommand(key, args => showDynamicDialog(args, value.template, value.fileName, value.resource));
     context.subscriptions.push(command);
   }
   console.timeEnd('activate');

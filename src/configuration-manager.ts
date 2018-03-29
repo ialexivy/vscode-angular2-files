@@ -1,62 +1,57 @@
 import { IConfig } from './models/config';
-import * as vscode from 'vscode';
+import { Uri, workspace, window } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { config as defaultConfig } from './config/cli-config';
-import mergeDeep from './deep-merge';
+import deepMerge from './deep-merge';
+import { promisify } from './promisify';
+
+
+const readFileAsync = promisify(fs.readFile);
 
 export class ConfigurationManager {
-    private currentRootPath: string = null;
-    private readonly CONFIG_FILE = '.angular-cli.json';
+  private currentRootPath: string = null;
+  private readonly CONFIG_FILE = '.angular-cli.json';
 
-    private readConfigFile(): Promise<Object> {
+  private async readConfigFile(): Promise<Object> {
+    const files = await workspace.findFiles(this.CONFIG_FILE, '', 1);
+    this.currentRootPath = workspace.rootPath;
+    console.log(process.version);
+    if (files.length > 0) {
+      const [{ 'fsPath': filePath }] = files;
 
-        return new Promise((resolve, reject) => {
-            vscode.workspace.findFiles(this.CONFIG_FILE, '', 1).then((result: vscode.Uri[]) => {
-                this.currentRootPath = vscode.workspace.rootPath;
+      const data = await readFileAsync(filePath, 'utf8');
 
-                if (result.length > 0) {
-                    let [{ 'fsPath': filePath }] = result;
-                    fs.readFile(filePath, 'utf8', (err, data) => {
-                        if (err) throw err;
+      let config = {};
 
-                        let config = {};
+      // prevent parsing issues
+      try {
+        config = JSON.parse(data);
+      } catch (ex) {
+        window.showErrorMessage('Invalid schema detected in .angular-cli.json, please correct and try again!');
+        throw Error('Invalid schema');
+      }
 
-                        //prevent parsing issues
-                        try {
-                            config = JSON.parse(data);
-                        } catch (ex) {
-                            vscode.window.showErrorMessage('Invalid schema detected in .angular-cli.json, please correct and try again!')
-                            reject();
-                        }
-
-                        resolve(config);
-                    });
-
-                } else {
-                    resolve(defaultConfig);
-                }
-            }, (reason: any) => reject(reason));
-        });
+      return config;
     }
 
-    private parseConfig(config): IConfig {
-        const projectConfig = mergeDeep({}, defaultConfig, config);
-        console.log(projectConfig);
-        return projectConfig;
-    }
+    return defaultConfig;
+  }
 
-    public async getConfig() {
-        let configFile = await this.readConfigFile();
-        return this.parseConfig(configFile);
-    }
+  private parseConfig(config): IConfig {
+    return deepMerge({}, defaultConfig, config);
+  }
 
+  public async getConfig() {
+    const configFile = await this.readConfigFile();
+    return this.parseConfig(configFile);
+  }
 
-    public watchConfigFiles(callback) {
-        fs.watch(vscode.workspace.rootPath, (eventType, filename) => {
-            if (this.CONFIG_FILE.includes(filename)) {
-                callback();
-            }
-        });
-    }
+  public watchConfigFiles(callback) {
+    fs.watch(workspace.rootPath, (eventType, filename) => {
+      if (this.CONFIG_FILE.includes(filename)) {
+        callback();
+      }
+    });
+  }
 }
