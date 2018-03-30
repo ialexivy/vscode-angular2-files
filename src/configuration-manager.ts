@@ -47,10 +47,12 @@ export class ConfigurationManager {
   }
 
   public watchConfigFiles(callback) {
-    fs.watch(workspace.rootPath, (eventType, filename) => {
-      if (this.CONFIG_FILE.includes(filename)) {
-        callback();
-      }
-    });
+    if (workspace.rootPath) {
+      fs.watch(workspace.rootPath, (eventType, filename) => {
+        if (this.CONFIG_FILE.includes(filename)) {
+          callback();
+        }
+      });
+    }
   }
 }
