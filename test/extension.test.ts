@@ -29,7 +29,7 @@ describe('Extension Tests:', () => {
   beforeEach(() => {
     config = JSON.parse(JSON.stringify(defaultConfig));
   });
-
+  
   afterEach(() => {
     rimraf.sync(`${testPath}/**/*`);
   });
@@ -40,7 +40,7 @@ describe('Extension Tests:', () => {
     }
   });
 
-  describe('Generate component tests', () => {  
+  describe('Generate component tests', () => {
     const resource = resources.get(ResourceType.Component);
     const resourceNames = resource.files.map(r => r.name(config));
 
@@ -142,13 +142,17 @@ describe('Extension Tests:', () => {
       expect(fileContent).to.contain(`encapsulation: ViewEncapsulation.${config.defaults.component.viewEncapsulation}`, ' Invalid change detection stratefy generated');
     });
 
-    it.skip('Should generate component with module declaration', async () => {
-      const checkForSome = arr => string => arr.some(bit => string.endsWith(bit));
-      const location = Object.assign({}, myPath);
-      const result = await angularCli.generateResources(ResourceType.Component, location, config);
-      const files = fs.readdirSync(myPath.fullPath);
+    it('Should generate component with module declaration', async () => {
+      const moduleLocation = Object.assign({}, { fullPath: path.join(testPath, 'my-module'), fileName: 'my-module', dirName: '', dirPath: testPath, rootPath: __dirname, params: [] });
+      const componentLocation = Object.assign({}, moduleLocation, { fullPath: path.join(testPath, 'my-module', 'my-component'), fileName: 'my-component', dirPath: path.join(testPath, 'my-module') });
+      await angularCli.generateResources(ResourceType.Module, moduleLocation, config);
+      const result = await angularCli.generateResources(ResourceType.Component, componentLocation, config);
+      const moduleFilename = fs.readdirSync(moduleLocation.fullPath).find(f => f.endsWith('module.ts'));
 
-      expect(true).to.be.false;
+      expect(moduleFilename).not.to.be.empty;
+
+      const moduleFileContent = fs.readFileSync(path.join(moduleLocation.fullPath, moduleFilename), 'utf-8');
+      expect(moduleFileContent).to.contain('MyComponentComponent', 'No declaration has been added');
     });
   });
 
