@@ -29,7 +29,17 @@ describe('Extension Tests:', () => {
     config = JSON.parse(JSON.stringify(defaultConfig));
   });
 
-  describe.only('Generate component tests', () => {
+  afterEach(() => {
+    rimraf.sync(`${testPath}/**/*`);
+  });
+
+  after(() => {
+    if (fs.existsSync(testPath)) {
+      rimraf.sync(testPath);
+    }
+  });
+
+  describe('Generate component tests', () => {
     const component = 'component';
     const resource = resources[component];
     const resourceNames = resource.files.map(r => r.name(config));
@@ -131,11 +141,267 @@ describe('Extension Tests:', () => {
       const fileContent = fs.readFileSync(path.join(location.fullPath, componentFileName), 'utf-8');
       expect(fileContent).to.contain(`encapsulation: ViewEncapsulation.${config.defaults.component.viewEncapsulation}`, ' Invalid change detection stratefy generated');
     });
+
+    it.skip('Should generate component with module declaration', async () => {
+      const checkForSome = arr => string => arr.some(bit => string.endsWith(bit));
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(component, location, config);
+      const files = fs.readdirSync(myPath.fullPath);
+
+      expect(true).to.be.false;
+    });
   });
 
-  after(() => {
-    if (fs.existsSync(testPath)) {
-      rimraf.sync(testPath);
-    }
+  describe('Generate class tests', () => {
+    const resourceName = 'class';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-class'),
+      fileName: 'my-class',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate class default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.endsWith(`${myPath.fileName}.ts`));
+
+      expect(files).to.have.length(1, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate class with spec', async () => {
+      config.defaults.class.spec = true;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+  });
+
+  describe('Generate directive tests', () => {
+    const resourceName = 'directive';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-directive'),
+      fileName: 'my-directive',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate directive default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate directive non flat', async () => {
+      config.defaults.directive.flat = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate directive without spec', async () => {
+      config.defaults.directive.flat = false;
+      config.defaults.directive.spec = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(1, `Incorect number of ${resourceName} files has been generated`);
+    });
+  });
+
+  describe.skip('Generate guard tests', () => {
+    const resourceName = 'guard';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-guard'),
+      fileName: 'my-guard',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate guard default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+  });
+
+  describe('Generate interface tests', () => {
+    const resourceName = 'interface';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-interface'),
+      fileName: 'my-interface',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate interface default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.`));
+
+      expect(files).to.have.length(1, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate interface with prefix', async () => {
+      config.defaults.interface.prefix = 'I';
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const interfaceFileName = fs.readdirSync(myPath.dirPath).find(f => f.includes(`${myPath.fileName}.`));
+      const fileContent = fs.readFileSync(path.join(location.dirPath, interfaceFileName), 'utf-8');
+
+      expect(fileContent).to.include('interface IMyInterface', `Incorect ${resourceName} name has been generated`);
+    });
+  });
+
+  describe('Generate module tests', () => {
+    const resourceName = 'module';
+    const resource = resources[resourceName];
+    const resourceNames = resource.files.map(r => r.name(config));
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-module'),
+      fileName: 'my-module',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate module default', async () => {
+      const checkForSome = arr => string => arr.some(bit => string.endsWith(bit));
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath);
+
+      expect(files).to.have.length(4, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate module with spec', async () => {
+      config.defaults.module.spec = true;
+      const checkForSome = arr => string => arr.some(bit => string.endsWith(bit));
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath);
+
+      expect(files).to.have.length(5, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate module flat', async () => {
+      config.defaults.module.flat = true;
+      const checkForSome = arr => string => arr.some(bit => string.endsWith(bit));
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.`));
+
+      expect(files).to.have.length(4, `Incorect number of ${resourceName} files has been generated`);
+    });
+  });
+
+  describe('Generate pipe tests', () => {
+    const resourceName = 'pipe';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-pipe'),
+      fileName: 'my-pipe',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate pipe default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate pipe non flat', async () => {
+      config.defaults.pipe.flat = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate pipe without spec', async () => {
+      config.defaults.pipe.flat = false;
+      config.defaults.pipe.spec = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(1, `Incorect number of ${resourceName} files has been generated`);
+    });
+  });
+
+  describe('Generate service tests', () => {
+    const resourceName = 'service';
+    const resource = resources[resourceName];
+
+    const myPath: IPath = {
+      fullPath: path.join(testPath, 'my-service'),
+      fileName: 'my-service',
+      dirName: '',
+      dirPath: testPath,
+      rootPath: __dirname,
+      params: [],
+    };
+
+    it('Should generate service default', async () => {
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.dirPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate service non flat', async () => {
+      config.defaults.service.flat = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(2, `Incorect number of ${resourceName} files has been generated`);
+    });
+
+    it('Should generate service without spec', async () => {
+      config.defaults.service.flat = false;
+      config.defaults.service.spec = false;
+      const location = Object.assign({}, myPath);
+      const result = await angularCli.generateResources(resourceName, location, config);
+      const files = fs.readdirSync(myPath.fullPath).filter(f => f.includes(`${myPath.fileName}.${resourceName}`));
+
+      expect(files).to.have.length(1, `Incorect number of ${resourceName} files has been generated`);
+    });
+
   });
 });

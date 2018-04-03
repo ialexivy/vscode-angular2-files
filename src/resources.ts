@@ -22,10 +22,13 @@ export const resources = {
     ],
   },
   service: {
+    locDirName: (loc, config) => (!config.defaults.service.flat) ? loc.fileName : loc.dirName,
+    locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
     files: [
             { name: config => `service.ts`, type: TemplateType.Service },
             { name: config => `service.spec.ts`, type: TemplateType.ServiceSpec, condition: config => config.defaults.service.spec },
     ],
+    createFolder: config => !config.defaults.service.flat,
   },
   pipe: {
     locDirName: (loc, config) => (!config.defaults.pipe.flat) ? loc.fileName : loc.dirName,
