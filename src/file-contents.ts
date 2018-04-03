@@ -4,7 +4,7 @@ import * as es6Renderer from 'express-es6-template-engine';
 import { IConfig } from './models/config';
 import { toCamelCase, toUpperCase } from './formatting';
 import { promisify } from './promisify';
-import { TemplateType } from './template-type';
+import { TemplateType } from './enums/template-type';
 
 
 const fsReaddir = promisify(fs.readdir);

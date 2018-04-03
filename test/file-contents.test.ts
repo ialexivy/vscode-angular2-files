@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as mocha from 'mocha';
 import { FileContents } from './../src/file-contents';
-import { TemplateType } from './../src/template-type';
+import { TemplateType } from './../src/enums/template-type';
 import { config as defaultConfig } from './../src/config/cli-config';
 import { IConfig } from '../src/models/config';
 

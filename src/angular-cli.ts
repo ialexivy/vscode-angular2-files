@@ -8,8 +8,9 @@ import { IFiles } from './models/file';
 import { promisify } from './promisify';
 import { toCamelCase, toUpperCase } from './formatting';
 import { createFiles, createFolder } from './ioutil';
-import { TemplateType } from './template-type';
+import { TemplateType } from './enums/template-type';
 import { resources } from './resources';
+import { ResourceType } from './enums/resource-type';
 
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
@@ -120,8 +121,8 @@ export default class AngularCli {
     }
   }
 
-  async generateResources(name: string, loc: IPath, config: IConfig) {
-    const resource = resources[name];
+  async generateResources(name: ResourceType, loc: IPath, config: IConfig) {
+    const resource = resources.get(name);
 
     loc.dirName = resource.hasOwnProperty('locDirName') ? resource.locDirName(loc, config) : loc.dirName;
     loc.dirPath = resource.hasOwnProperty('locDirPath') ? resource.locDirPath(loc, config) : loc.dirPath;
