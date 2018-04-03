@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.4.1
+* Fix issue generating non flat service
+
 ### 1.4.0
 * Fix trailing commas issue
 
