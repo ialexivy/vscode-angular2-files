@@ -404,12 +404,18 @@ describe('Extension Tests:', () => {
 
   it('Should contain only lowercase imports', async () => {
     const srcpath = path.resolve(__dirname, '..', 'src');
-    const files = fs.readdirSync(srcpath).filter(f => f.endsWith('.js'));
-    const regex = /\(\s*([^)]+?)\s*\)/;
-    const mapStateToItem = ([, newItem]) => ([...newItem]);
 
+    const regex = /\(\s*([^)]+?)\s*\)/;
+    const getAllFiles = dir =>
+      fs.readdirSync(dir).reduce((files, file) => {
+        const name = path.join(dir, file);
+        const isDirectory = fs.statSync(name).isDirectory();
+        return isDirectory ? [...files, ...getAllFiles(name)] : [...files, name];
+      },                         []);
+
+    const files = getAllFiles(srcpath).filter(f => f.endsWith('.js'));
     files.forEach((file) => {
-      const fileContent = fs.readFileSync(path.join(srcpath, file), 'utf-8');
+      const fileContent = fs.readFileSync(file, 'utf-8');
       const lines = fileContent.split('\r\n').filter(f => f.includes('require('));
       const requireLines = lines.map(line => regex.exec(line)[1]);
       requireLines.forEach((line) => {
