@@ -401,4 +401,22 @@ describe('Extension Tests:', () => {
     });
 
   });
+
+  it('Should contain only lowercase imports', async () => {
+    const srcpath = path.resolve(__dirname, '..', 'src');
+    const files = fs.readdirSync(srcpath).filter(f => f.endsWith('.js'));
+    const regex = /\(\s*([^)]+?)\s*\)/;
+    const mapStateToItem = ([, newItem]) => ([...newItem]);
+
+    files.forEach((file) => {
+      const fileContent = fs.readFileSync(path.join(srcpath, file), 'utf-8');
+      const lines = fileContent.split('\r\n').filter(f => f.includes('require('));
+      const requireLines = lines.map(line => regex.exec(line)[1]);
+      requireLines.forEach((line) => {
+        expect(line).to.be.eql(line.toLocaleLowerCase());
+      });
+    });
+
+  });
+
 });
