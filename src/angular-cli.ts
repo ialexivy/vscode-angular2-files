@@ -17,7 +17,7 @@ const fsReaddir = promisify(fs.readdir);
 const fsStat = promisify(fs.stat);
 const fsReadFile = promisify(fs.readFile);
 
-export default class AngularCli {
+export class AngularCli {
 
 
   constructor(private readonly fc = new FileContents()) {

@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.4.3
+* Fix naming issue that prevent extension to work on linux distributions
+
 ### 1.4.2
 * Reduced extension size
 

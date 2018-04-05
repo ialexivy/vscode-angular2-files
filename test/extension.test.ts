@@ -5,7 +5,7 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as mocha from 'mocha';
 import * as path from 'path';
-import AngularCli from './../src/Angular-Cli';
+import { AngularCli } from './../src/angular-cli';
 import { IConfig } from './../src/models/config';
 import { IPath } from './../src/models/path';
 import { config as defaultConfig } from './../src/config/cli-config';
@@ -29,7 +29,7 @@ describe('Extension Tests:', () => {
   beforeEach(() => {
     config = JSON.parse(JSON.stringify(defaultConfig));
   });
-  
+
   afterEach(() => {
     rimraf.sync(`${testPath}/**/*`);
   });

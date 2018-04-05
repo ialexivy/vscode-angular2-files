@@ -4,7 +4,7 @@ import { IPath } from './models/path';
 import { showFileNameDialog, displayStatusMessage } from './editor';
 import { commandsMap } from './commands';
 import { toTileCase } from './formatting';
-import AngularCli from './Angular-Cli';
+import { AngularCli } from './angular-cli';
 import { ResourceType } from './enums/resource-type';
 
 export async function activate(context: ExtensionContext) {
