@@ -13,9 +13,8 @@ export class ConfigurationManager {
   private readonly CONFIG_FILE = '.angular-cli.json';
 
   private async readConfigFile(): Promise<Object> {
-    const files = await workspace.findFiles(this.CONFIG_FILE, '', 1);
+    const files = await workspace.findFiles('**/' + this.CONFIG_FILE, '', 1);
     this.currentRootPath = workspace.rootPath;
-    console.log(process.version);
     if (files.length > 0) {
       const [{ 'fsPath': filePath }] = files;
 

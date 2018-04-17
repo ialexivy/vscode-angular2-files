@@ -425,4 +425,11 @@ describe('Extension Tests:', () => {
 
   });
 
+  it('Should contain templates', async () => {
+    const srcPath = path.resolve(__dirname, '..', 'src', 'templates');
+    expect(fs.existsSync(srcPath), `Templates folder doesn't exists`);
+    const files = fs.readdirSync(srcPath).filter(f => f.endsWith('.tmpl'));
+    expect(files).not.to.be.empty;
+  });
+
 });
