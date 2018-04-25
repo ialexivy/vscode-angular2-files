@@ -42,8 +42,58 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [
-            {
+        "configuration": {
+            "type": "object",
+            "title": "Angular Files menu option configuration",
+            "properties": {
+                "angular2-files.menu.component": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.directive": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.pipe": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.service": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.class": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.interface": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.route": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.enum": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.module": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
+                }
+            }
+        },
+        "commands": [{
                 "command": "extension.addAngular2Component",
                 "title": "Generate Component"
             },
@@ -81,49 +131,48 @@
             }
         ],
         "menus": {
-            "explorer/context": [
-                {
-                    "when": "",
+            "explorer/context": [{
+                    "when": "config.angular2-files.menu.component",
                     "command": "extension.addAngular2Component",
                     "group": "Angular2"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.directive",
                     "command": "extension.addAngular2Directive",
                     "group": "Angular2"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.pipe",
                     "command": "extension.addAngular2Pipe",
                     "group": "Angular2"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.service",
                     "command": "extension.addAngular2Service",
                     "group": "Angular2"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.module",
                     "command": "extension.addAngular2Module",
                     "group": "Angular2"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.class",
                     "command": "extension.addAngular2Class",
                     "group": "Angular2 Essentials"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.interface",
                     "command": "extension.addAngular2Interface",
                     "group": "Angular2 Essentials"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.route",
                     "command": "extension.addAngular2Route",
                     "group": "Angular2 Essentials"
                 },
                 {
-                    "when": "",
+                    "when": "config.angular2-files.menu.enum",
                     "command": "extension.addAngular2Enum",
                     "group": "Angular2 Essentials"
                 }
