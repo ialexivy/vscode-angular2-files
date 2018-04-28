@@ -2,7 +2,7 @@
     "name": "vscode-angular2-files",
     "displayName": "Angular Files",
     "description": "Quickly scaffold angular file templates",
-    "version": "1.4.4",
+    "version": "1.4.5",
     "icon": "images/icon.png",
     "publisher": "alexiv",
     "author": {
@@ -93,7 +93,8 @@
                 }
             }
         },
-        "commands": [{
+        "commands": [
+            {
                 "command": "extension.addAngular2Component",
                 "title": "Generate Component"
             },
@@ -131,7 +132,8 @@
             }
         ],
         "menus": {
-            "explorer/context": [{
+            "explorer/context": [
+                {
                     "when": "config.angular2-files.menu.component",
                     "command": "extension.addAngular2Component",
                     "group": "Angular2"

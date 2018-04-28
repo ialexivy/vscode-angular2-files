@@ -8,6 +8,19 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.4.5
+* Added configuration to hide some menu names, thanks to roknow or contribution!
+```json
+  "angular2-files.menu.class": false,
+  "angular2-files.menu.component": true,
+  "angular2-files.menu.directive": true,
+  "angular2-files.menu.enum": false,
+  "angular2-files.menu.interface": false,
+  "angular2-files.menu.module": false,
+  "angular2-files.menu.pipe": true,
+  "angular2-files.menu.route": false,
+  "angular2-files.menu.service": true
+```
 ### 1.4.4
 * Fix issue finding .angular-cli.json file in multi root projects
 
