@@ -2,7 +2,7 @@
     "name": "vscode-angular2-files",
     "displayName": "Angular Files",
     "description": "Quickly scaffold angular file templates",
-    "version": "1.4.5",
+    "version": "1.4.6",
     "icon": "images/icon.png",
     "publisher": "alexiv",
     "author": {
