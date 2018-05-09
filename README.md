@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.4.7
+* Fix issue reading angular.json component prefix
+
 ### 1.4.6
 * Added support for angular.json (both schemas of .angular-cli.json and angular.json are supported)
 
