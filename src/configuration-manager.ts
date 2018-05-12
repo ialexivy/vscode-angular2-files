@@ -54,7 +54,7 @@ export class ConfigurationManager {
           }
         }
       
-        oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext;
+        oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
       }
 
       return deepMerge({}, defaultConfig, oldConfig);
