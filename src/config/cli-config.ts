@@ -14,6 +14,8 @@ export const config: IConfig = {
       flat: false,
       changeDetection: 'Default',
       viewEncapsulation: 'Emulated',
+      styleext: null,
+      prefix: null,
     },
     class: {
       spec: false,
@@ -21,6 +23,7 @@ export const config: IConfig = {
     directive: {
       flat: true,
       spec: true,
+      prefix: null,
     },
     guard: {
       flat: true,

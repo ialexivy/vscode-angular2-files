@@ -25,6 +25,8 @@ export interface IApp {
 
 
 export interface IProperties {
+  styleext?: string;
+  skipImport?: boolean;
   flat?: boolean;
   spec?: boolean;
   inlineStyle?: boolean;
@@ -32,6 +34,10 @@ export interface IProperties {
   viewEncapsulation?: 'Emulated' | 'Native' | 'None';
   changeDetection?: 'Default' | 'OnPush';
   prefix?: string;
+  selector?: string;
+  module?: string;
+  export?: boolean;
+  [k: string]: any;  
 }
 
 export interface IDefaults {
