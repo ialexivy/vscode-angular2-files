@@ -1,6 +1,7 @@
 import { IConfig } from './../models/config';
 
 export const config: IConfig = {
+  version: 'ng5',
   apps: [{
     root: 'src',
     prefix: 'app',

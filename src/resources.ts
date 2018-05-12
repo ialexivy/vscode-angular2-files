@@ -27,7 +27,8 @@ export const resources = new Map<ResourceType, IResource>([
     locDirName: (loc, config) => (!config.defaults.service.flat) ? loc.fileName : loc.dirName,
     locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
     files: [
-      { name: config => `service.ts`, type: TemplateType.Service },
+      { name: config => `service.ts`, type: TemplateType.Service, condition: config => config.version === 'ng5' },
+      { name: config => `service.ts`, type: TemplateType.ServiceNg6, condition: config => config.version === 'ng6' },
       { name: config => `service.spec.ts`, type: TemplateType.ServiceSpec, condition: config => config.defaults.service.spec },
     ],
     createFolder: config => !config.defaults.service.flat,

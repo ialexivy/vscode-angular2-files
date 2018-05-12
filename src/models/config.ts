@@ -37,7 +37,7 @@ export interface IProperties {
   selector?: string;
   module?: string;
   export?: boolean;
-  [k: string]: any;  
+  [k: string]: any;
 }
 
 export interface IDefaults {
@@ -56,7 +56,5 @@ export interface IConfig {
   project?: IProject;
   apps: IApp[];
   defaults: IDefaults;
+  version?: 'ng5' | 'ng6';
 }
-
-
-

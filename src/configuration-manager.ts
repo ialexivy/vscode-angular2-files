@@ -53,10 +53,10 @@ export class ConfigurationManager {
             }
           }
         }
-      
+
         oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
       }
-
+      oldConfig.version = 'ng6';
       return deepMerge({}, defaultConfig, oldConfig);
     }
 

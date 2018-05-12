@@ -9,6 +9,7 @@ export enum TemplateType {
     Pipe = 'pipe.tmpl',
     PipeSpec = 'pipe.spec.tmpl',
     Service = 'service.tmpl',
+    ServiceNg6 = 'service.ng6.tmpl',
     ServiceSpec = 'service.spec.tmpl',
     Class = 'class.tmpl',
     ClassSpec = 'class.spec.tmpl',
