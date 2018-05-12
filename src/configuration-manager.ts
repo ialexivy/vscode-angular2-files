@@ -44,20 +44,17 @@ export class ConfigurationManager {
 
       const project = newConfig.projects[newConfig.defaultProject];
 
-      if (project) {
-        if (newConfig.schematics['@schematics/angular:component']) {
-          const componentSchematics = newConfig.schematics['@schematics/angular:component'];
-          oldConfig.apps[0].prefix = componentSchematics.prefix || 'app';
-          oldConfig.defaults.styleExt = componentSchematics.styleext || 'css';
-        }
-
-        if (newConfig.schematics) {
-          for (const key of Object.keys(newConfig.schematics)) {
-            const normalizedKey = key.replace('@schematics/angular:', '');
-            for (const prop of Object.keys(newConfig.schematics[key])) {
-              if (oldConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
-                oldConfig.defaults[normalizedKey][prop] = newConfig.schematics[key][prop];
-              }
+      if (project && project.schematics['@schematics/angular:component']) {
+        const componentSchematics = project.schematics['@schematics/angular:component'];
+        oldConfig.apps[0].prefix = componentSchematics.prefix || 'app';
+        oldConfig.defaults.styleExt = componentSchematics.styleext || 'css';
+      }
+      if (newConfig.schematics) {
+        for (const key of Object.keys(newConfig.schematics)) {
+          const normalizedKey = key.replace('@schematics/angular:', '');
+          for (const prop of Object.keys(newConfig.schematics[key])) {
+            if (oldConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
+              oldConfig.defaults[normalizedKey][prop] = newConfig.schematics[key][prop];
             }
           }
         }
