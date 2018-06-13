@@ -42,25 +42,49 @@ export class ConfigurationManager {
       const oldConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
       const newConfig = <AngularCliConfiguration>config;
 
+      const globalConfig = this.parseSchematicsConfig(newConfig);
       const project = newConfig.projects[newConfig.defaultProject];
+      const projectConfig = this.parseSchematicsConfig(project);
 
-      if (project && project.schematics) {
-        for (const key of Object.keys(project.schematics)) {
-          const normalizedKey = key.replace('@schematics/angular:', '');
-          for (const prop of Object.keys(project.schematics[key])) {
-            if (oldConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
-              oldConfig.defaults[normalizedKey][prop] = project.schematics[key][prop];
-            }
-          }
-        }
+      // replace global config with project config
+      deepMerge(oldConfig, globalConfig, projectConfig);
 
-        oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
-      }
+      oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
       oldConfig.version = 'ng6';
-      return deepMerge({}, defaultConfig, oldConfig);
+      return oldConfig;
     }
 
     return deepMerge({}, defaultConfig, config);
+  }
+
+  private parseSchematicsConfig(cfg) {
+    if (cfg && cfg.schematics) {
+      const templateConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
+      const config = {
+        defaults: {
+          styleExt: '',
+        },
+      };
+
+      for (const key of Object.keys(cfg.schematics)) {
+        const normalizedKey = key.replace('@schematics/angular:', '');
+        for (const prop of Object.keys(cfg.schematics[key])) {
+          if (templateConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
+            if (!config.defaults.hasOwnProperty(normalizedKey)) {
+              config.defaults[normalizedKey] = {};
+            }
+
+            config.defaults[normalizedKey][prop] = cfg.schematics[key][prop];
+          }
+        }
+      }
+
+      config.defaults.styleExt = templateConfig.defaults.component.styleext || templateConfig.defaults.styleExt;
+
+      return config;
+    }
+
+    return null;
   }
 
   public async getConfig() {
