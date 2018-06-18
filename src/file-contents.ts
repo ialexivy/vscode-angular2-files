@@ -10,7 +10,7 @@ import { TemplateType } from './enums/template-type';
 const fsReaddir = promisify(fs.readdir);
 const fsReadFile = promisify(fs.readFile);
 const TEMPLATES_FOLDER = 'templates';
-const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt';
+const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, params';
 
 export class FileContents {
   private templatesMap: Map<string, Function>;
@@ -39,7 +39,7 @@ export class FileContents {
     return new Map(templates.map(x => x as [string, string]));
   }
 
-  public getTemplateContent(template: TemplateType, config: IConfig, inputName: string) {
+  public getTemplateContent(template: TemplateType, config: IConfig, inputName: string, params: string[] = []) {
     const templateName: string = template;
     const [app] = config.apps;
     const cmpPrefix = config.defaults.component.prefix || app.prefix;
@@ -54,7 +54,8 @@ export class FileContents {
       config.defaults.component.changeDetection,
       config.defaults.component.inlineTemplate,
       config.defaults.component.inlineStyle,
-      config.defaults.styleExt];
+      config.defaults.styleExt,
+      params];
 
     return (this.templatesMap.has(templateName)) ? this.templatesMap.get(templateName)(...args) : '';
   }

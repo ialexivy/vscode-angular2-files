@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ${upperName}Component } from './${inputName}.component';
+import { ${upperName}Component } from './${inputName}.component';${params.includes('routing')? `\n\nimport { ${upperName}RoutingModule } from './${inputName}-routing.module';` : ''}
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule${params.includes('routing')? `,\n    ${upperName}RoutingModule`:''}
   ],
   declarations: [${upperName}Component]
 })

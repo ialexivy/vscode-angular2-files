@@ -36,6 +36,11 @@ export const showFileNameDialog = async (args, type, defaultTypeName): Promise<I
       throw new Error('That\'s not a valid name! (no whitespaces or special characters)');
     } else {
       let dirName = '';
+      const params = fileName.split(' ')
+        .filter(t => t.startsWith('--'))
+        .map(t => t.replace('--', ''));
+
+      fileName = fileName.split(' ').filter(t => !t.startsWith('--')).join('');
 
       const fullPath = path.join(rootPath, fileName);
 
@@ -50,7 +55,7 @@ export const showFileNameDialog = async (args, type, defaultTypeName): Promise<I
         dirName,
         dirPath,
         rootPath,
-        params: [],
+        params,
       };
     }
   }
