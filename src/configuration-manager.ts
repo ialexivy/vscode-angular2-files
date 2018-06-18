@@ -36,7 +36,7 @@ export class ConfigurationManager {
 
     return defaultConfig;
   }
-
+ 
   private parseConfig(config): IConfig {
     if (config.hasOwnProperty('projects')) {
       const oldConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
@@ -69,7 +69,7 @@ export class ConfigurationManager {
       for (const key of Object.keys(cfg.schematics)) {
         const normalizedKey = key.replace('@schematics/angular:', '');
         for (const prop of Object.keys(cfg.schematics[key])) {
-          if (templateConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
+          if (templateConfig.defaults[normalizedKey] && templateConfig.defaults[normalizedKey].hasOwnProperty(prop)) {
             if (!config.defaults.hasOwnProperty(normalizedKey)) {
               config.defaults[normalizedKey] = {};
             }

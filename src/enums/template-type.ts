@@ -6,6 +6,7 @@ export enum TemplateType {
     Directive = 'directive.tmpl',
     DirectiveSpec = 'directive.spec.tmpl',
     Module = 'module.tmpl',
+    ModuleRouting = 'module.routing.tmpl',
     Pipe = 'pipe.tmpl',
     PipeSpec = 'pipe.spec.tmpl',
     Service = 'service.tmpl',

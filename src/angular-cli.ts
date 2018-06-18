@@ -131,10 +131,11 @@ export class AngularCli {
       await this.addDeclarationsToModule(loc, resource.declaration);
     }
 
-    const files: IFiles[] = resource.files.filter(file => (file.condition) ? file.condition(config) : true).map((file) => {
+    const files: IFiles[] = resource.files.filter(file => (file.condition) ? file.condition(config, loc.params) : true).map((file) => {
+      const fileName: string = file.name(config);
       return {
-        name: path.join(loc.dirPath, `${loc.fileName}.${file.name(config)}`),
-        content: this.fc.getTemplateContent(file.type, config, loc.fileName),
+        name: path.join(loc.dirPath, fileName.startsWith('-') ? `${loc.fileName}${fileName}` : `${loc.fileName}.${fileName}`),
+        content: this.fc.getTemplateContent(file.type, config, loc.fileName, loc.params),
       };
     });
 
