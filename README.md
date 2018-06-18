@@ -8,6 +8,9 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.5.2
+* Support generating module with routing praram eg. "my-module --routing" similar to "ng g module my-module --routing"
+
 ### 1.5.1
 * Support global level angular.json config
 
