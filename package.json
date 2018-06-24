@@ -9,7 +9,7 @@
         "name": "Alexander Ivanichev"
     },
     "engines": {
-        "vscode": "^1.5.0"
+        "vscode": "^1.22.0"
     },
     "repository": {
         "type": "git",
@@ -197,7 +197,7 @@
         "tslint": "^5.9.1",
         "tslint-config-airbnb": "^5.8.0",
         "typescript": "^2.7.2",
-        "vscode": "^1.1.0",
+        "vscode": "^1.1.18",
         "vscode-test-content": "^1.2.0"
     },
     "dependencies": {

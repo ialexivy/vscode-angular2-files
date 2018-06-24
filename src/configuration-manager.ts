@@ -36,7 +36,7 @@ export class ConfigurationManager {
 
     return defaultConfig;
   }
- 
+
   private parseConfig(config): IConfig {
     if (config.hasOwnProperty('projects')) {
       const oldConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
