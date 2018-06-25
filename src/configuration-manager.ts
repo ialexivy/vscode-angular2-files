@@ -36,7 +36,7 @@ export class ConfigurationManager {
 
     return defaultConfig;
   }
- 
+
   private parseConfig(config): IConfig {
     if (config.hasOwnProperty('projects')) {
       const oldConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
@@ -45,6 +45,8 @@ export class ConfigurationManager {
       const globalConfig = this.parseSchematicsConfig(newConfig);
       const project = newConfig.projects[newConfig.defaultProject];
       const projectConfig = this.parseSchematicsConfig(project);
+      const prefix = project ? project.prefix : null;
+      oldConfig.apps[0].prefix = prefix || oldConfig.apps[0].prefix;
 
       // replace global config with project config
       deepMerge(oldConfig, globalConfig, projectConfig);

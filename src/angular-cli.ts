@@ -11,6 +11,7 @@ import { createFiles, createFolder } from './ioutil';
 import { TemplateType } from './enums/template-type';
 import { resources } from './resources';
 import { ResourceType } from './enums/resource-type';
+import { OptionType } from './enums/option-type';
 
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
@@ -58,11 +59,11 @@ export class AngularCli {
     return data.substring(0, endOfLastImportInx) + `\nimport { ${fileNameUpper}${typeUpper} } from '${relativePath}/${fileName}.${type}';` + data.substring(endOfLastImportInx, fileLength);
   }
 
-  private addToDeclarations(data: string, fileName: string, type: string) {
+  private addToArray(data: string, fileName: string, type: string, prop: string) {
     const typeUpper = toUpperCase(type);
     const fileNameUpper = toUpperCase(fileName);
 
-    const declarationLastInx = data.indexOf(']', data.indexOf('declarations')) + 1;
+    const declarationLastInx = data.indexOf(']', data.indexOf(prop)) + 1;
 
     let before = data.substring(0, declarationLastInx);
     const after = data.substring(declarationLastInx, data.length);
@@ -86,10 +87,11 @@ export class AngularCli {
     return '.' + src.replace(modulePath, '').replace(/\\/g, '/');
   }
 
-  private async addDeclarationsToModule(loc: IPath, type: string) {
+  private async addDeclarationsToModule(loc: IPath, type: string, module: string, exports: boolean = false) {
+    const condition = (name: string) => module ? name.includes(`${module}.module.ts`) : name.includes('.module.ts');
 
     const moduleFiles = [];
-    await this.findModulePathRecursive(loc.rootPath, moduleFiles, (name: string) => name.indexOf('.module.ts') !== -1);
+    await this.findModulePathRecursive(loc.rootPath, moduleFiles, condition);
 
     // at least one module is there
     if (moduleFiles.length > 0) {
@@ -115,8 +117,10 @@ export class AngularCli {
       // relativePath
       const relativePath = this.getRelativePath(module, loc.dirPath);
       let content = this.addToImport(data, loc.fileName, type, relativePath);
-      content = this.addToDeclarations(content, loc.fileName, type);
-
+      content = this.addToArray(content, loc.fileName, type, 'declarations');
+      if (exports) {
+        content = this.addToArray(content, loc.fileName, type, 'exports');
+      }
       await fsWriteFile(module, content);
     }
   }
@@ -127,8 +131,10 @@ export class AngularCli {
     loc.dirName = resource.hasOwnProperty('locDirName') ? resource.locDirName(loc, config) : loc.dirName;
     loc.dirPath = resource.hasOwnProperty('locDirPath') ? resource.locDirPath(loc, config) : loc.dirPath;
 
-    if (resource.hasOwnProperty('declaration') && resource.declaration) {
-      await this.addDeclarationsToModule(loc, resource.declaration);
+    if (resource.hasOwnProperty('declaration') &&
+      resource.declaration &&
+      !config.defaults[name].skipImport) {
+      await this.addDeclarationsToModule(loc, resource.declaration, config.defaults[name].module, config.defaults[name].export);
     }
 
     const files: IFiles[] = resource.files.filter(file => (file.condition) ? file.condition(config, loc.params) : true).map((file) => {
