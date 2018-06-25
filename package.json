@@ -13,10 +13,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/qwert789/vscode-angular2-files"
+        "url": "https://github.com/ivalexa/vscode-angular2-files"
     },
     "bugs": {
-        "url": "https://github.com/qwert789/vscode-angular2-files/issues"
+        "url": "https://github.com/ivalexa/vscode-angular2-files/issues"
     },
     "keywords": [
         "Angular 2",
