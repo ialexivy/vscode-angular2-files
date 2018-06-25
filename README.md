@@ -9,7 +9,7 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 ## Changelog
 
 ### 1.6.0
-You can now leverage angular-cli resource generation options without remembering them, while keeping things simple and fast!
+You can now leverage angular-cli resource generation options without remembering their names, while keeping things simple and fast!
 
 * `"my-component -o"` - Use "-o" flag to specify which options to override
 * `"my-component --inline-style -t"` - Specify resource generation options without invoking options window
