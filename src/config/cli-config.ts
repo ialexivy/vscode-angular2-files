@@ -41,6 +41,7 @@ export const config: IConfig = {
       skipImport: false,
       routing: false,
       routingScope: 'Child',
+      commonModule: true,
     },
     pipe: {
       flat: true,

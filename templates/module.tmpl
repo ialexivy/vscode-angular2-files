@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ${upperName}Component } from './${inputName}.component';${params.includes('Routing')? `\n\nimport { ${upperName}RoutingModule } from './${inputName}-routing.module';` : ''}
 
 @NgModule({
-  imports: [
-    CommonModule${params.includes('Routing')? `,\n    ${upperName}RoutingModule`:''}
-  ],
+  imports: [${importCommonModule?'\n    CommonModule\n  ':''}${params.includes('Routing')? `,\n    ${upperName}RoutingModule`:''}],
   declarations: [${upperName}Component]
 })
 export class ${upperName}Module { }

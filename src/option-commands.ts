@@ -16,6 +16,6 @@ export const optionsCommands = new Map<OptionType, OptionItem>([
     [OptionType.Export, { commands: ['--export'], configPath: 'defaults.{resource}.export', type: 'True | False', description: 'Specifies if declaring module exports the component.' }],
     [OptionType.Routing, { commands: ['--routing'], configPath: 'defaults.{resource}.routing', type: 'True | False', description: 'Generates a routing module.' }],
     [OptionType.RoutingScope, { commands: ['--routing-scope'], configPath: 'defaults.{resource}.routingScope', type: 'Child | Root', description: 'The scope for the generated routing.' }],
-    [OptionType.CommonModule, { commands: ['--common-module'], type: 'True | False', description: 'Flag to control whether the CommonModule is imported.' }],
+    [OptionType.CommonModule, { commands: ['--common-module'], configPath: 'defaults.{resource}.commonModule', type: 'True | False', description: 'Flag to control whether the CommonModule is imported.' }],
     [OptionType.ShowOptions, { commands: ['-o'], description: 'Allow to override options' }],
 ]);
