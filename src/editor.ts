@@ -103,7 +103,7 @@ export const showOptionsDialog = async (config: IConfig, loc: IPath, resource: R
     const [optionName, optionType] = option;
     const optionItem = optionsCommands.get(optionType);
     const resourceConfigPath = optionItem.configPath ? optionItem.configPath.replace('{resource}', resource.toLocaleLowerCase()) : '';
-    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) : '';
+    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) || '' : '';
 
     const displayValue = (optionDefaultValue && optionDefaultValue !== '') ? `${optionName} (default: ${optionDefaultValue})` : optionName;
     return { label: displayValue, description: optionItem.description, picked: loc.params.includes(optionType) } as vscode.QuickPickItem;
@@ -128,10 +128,10 @@ export const configureOptionsValues = async (config: IConfig, resource: Resource
   await asyncForEach(optionTypes, async (ot) => {
     const optionItem = optionsCommands.get(ot);
     const resourceConfigPath = optionItem.configPath ? optionItem.configPath.replace('{resource}', resource.toLocaleLowerCase()) : '';
-    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) : '';
+    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) || '' : '';
     const [command] = optionItem.commands;
     const items = optionItem.type ? optionItem.type.split('|').map(item => item.trim()) : [];
-    const [firstItem] = items;
+    const [firstItem = ''] = items;
     const sortedItems = firstItem.toLowerCase() === optionDefaultValue.toString().toLowerCase() ? items.reverse() : items;
 
     const params = { placeHolder: `${command}: ${optionItem.description}` };
