@@ -154,15 +154,17 @@ const setToValue = (obj, value, path) => {
 const parseOptionValue = value => ['True', 'False'].includes(value) ? JSON.parse(value.toLocaleLowerCase()) : value;
 
 export const mapConfigValues = (config: IConfig, resource: ResourceType, optionsValuesMap: Map<OptionType, string>) => {
+  const newConfig = JSON.parse(JSON.stringify(config));
+
   optionsValuesMap.forEach((val, key) => {
     const optionItem = optionsCommands.get(key);
     const optionValue = parseOptionValue(val);
     const resourceConfigPath = optionItem.configPath ? optionItem.configPath.replace('{resource}', resource.toLocaleLowerCase()) : '';
 
-    setToValue(config, optionValue, resourceConfigPath);
+    setToValue(newConfig, optionValue, resourceConfigPath);
   });
-  
-  return config;
+
+  return newConfig;
 };
 
 export const showWarning = async (): Promise<any> => {

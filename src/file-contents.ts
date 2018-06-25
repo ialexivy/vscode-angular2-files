@@ -6,11 +6,10 @@ import { toCamelCase, toUpperCase } from './formatting';
 import { promisify } from './promisify';
 import { TemplateType } from './enums/template-type';
 
-
 const fsReaddir = promisify(fs.readdir);
 const fsReadFile = promisify(fs.readFile);
 const TEMPLATES_FOLDER = 'templates';
-const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, params';
+const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, cmpSelector, dirSelector, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, params';
 
 export class FileContents {
   private templatesMap: Map<string, Function>;
@@ -44,17 +43,22 @@ export class FileContents {
     const [app] = config.apps;
     const cmpPrefix = config.defaults.component.prefix || app.prefix;
     const dirPrefix = config.defaults.directive.prefix || app.prefix;
+    const cmpSelector = config.defaults.component.selector || `${cmpPrefix}-${inputName}`;
+    const dirSelector = config.defaults.directive.selector || `${dirPrefix}${toUpperCase(inputName)}`;
+    const styleExt = config.defaults.component.styleext || config.defaults.styleExt;
 
     const args = [inputName,
       toUpperCase(inputName),
       config.defaults.interface.prefix,
       cmpPrefix,
       dirPrefix,
+      cmpSelector,
+      dirSelector,
       config.defaults.component.viewEncapsulation,
       config.defaults.component.changeDetection,
       config.defaults.component.inlineTemplate,
       config.defaults.component.inlineStyle,
-      config.defaults.styleExt,
+      styleExt,
       params];
 
     return (this.templatesMap.has(templateName)) ? this.templatesMap.get(templateName)(...args) : '';

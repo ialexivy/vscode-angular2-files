@@ -8,7 +8,7 @@ export const resources = new Map<ResourceType, IResource>([
   [ResourceType.Module, {
     locDirName: (loc, config) => (!config.defaults.module.flat) ? loc.fileName : loc.dirName,
     locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
-    files: [{ name: config => `component.${config.defaults.styleExt}`, type: TemplateType.ComponentStyle },
+    files: [{ name: config => `component.${config.defaults.component.styleext || config.defaults.styleExt}`, type: TemplateType.ComponentStyle },
     { name: config => `component.html`, type: TemplateType.ComponentHtml },
     { name: config => `component.ts`, type: TemplateType.Component },
     { name: config => `module.ts`, type: TemplateType.Module },
@@ -81,7 +81,7 @@ export const resources = new Map<ResourceType, IResource>([
     locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
     declaration: 'component',
     files: [{ name: config => `component.ts`, type: TemplateType.Component },
-    { name: config => `component.${config.defaults.styleExt}`, type: TemplateType.ComponentStyle, condition: (config, params) => !config.defaults.component.inlineStyle },
+    { name: config => `component.${config.defaults.component.styleext || config.defaults.styleExt}`, type: TemplateType.ComponentStyle, condition: (config, params) => !config.defaults.component.inlineStyle },
     { name: config => `component.html`, type: TemplateType.ComponentHtml, condition: (config, params) => !config.defaults.component.inlineTemplate },
     { name: config => `component.spec.ts`, type: TemplateType.ConponentSpec, condition: (config, params) => config.defaults.component.spec },
     ],

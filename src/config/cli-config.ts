@@ -17,6 +17,8 @@ export const config: IConfig = {
       viewEncapsulation: 'Emulated',
       styleext: null,
       prefix: null,
+      skipImport: false,
+      module: 'app',
     },
     class: {
       spec: false,
@@ -36,6 +38,7 @@ export const config: IConfig = {
     module: {
       flat: false,
       spec: false,
+      skipImport: false,
     },
     pipe: {
       flat: true,

@@ -21,15 +21,16 @@ export async function activate(context: ExtensionContext) {
 
   const showDynamicDialog = async (args, fileName: string, resource: ResourceType) => {
     const loc = await showFileNameDialog(args, resource, fileName);
+    let resourceConfig = config;
     if (loc.params.includes(OptionType.ShowOptions)) {
       const selectedOptions = await showOptionsDialog(config, loc, resource);
       if (selectedOptions) {
         const optionsValuesMap = await configureOptionsValues(selectedOptions);
-        const cfg = mapConfigValues(config, resource, optionsValuesMap);
+        resourceConfig = mapConfigValues(config, resource, optionsValuesMap);
       }
     }
 
-    angularCli.generateResources.call(angularCli, resource, loc, config);
+    await angularCli.generateResources(resource, loc, resourceConfig);
     displayStatusMessage(toTileCase(resource), loc.fileName);
   };
 

@@ -144,6 +144,7 @@ describe('Extension Tests:', () => {
 
     it('Should generate component with module declaration', async () => {
       const moduleLocation = Object.assign({}, { fullPath: path.join(testPath, 'my-module'), fileName: 'my-module', dirName: '', dirPath: testPath, rootPath: __dirname, params: [] });
+      config.defaults.component.module = 'my-module';
       const componentLocation = Object.assign({}, moduleLocation, { fullPath: path.join(testPath, 'my-module', 'my-component'), fileName: 'my-component', dirPath: path.join(testPath, 'my-module') });
       await angularCli.generateResources(ResourceType.Module, moduleLocation, config);
       const result = await angularCli.generateResources(ResourceType.Component, componentLocation, config);
