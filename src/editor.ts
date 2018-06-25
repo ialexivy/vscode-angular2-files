@@ -48,12 +48,29 @@ export const showFileNameDialog = async (args, type: ResourceType, defaultTypeNa
       const optionsMap = new Map<string, OptionType>(Array.prototype.concat.apply([], [...resoureParamsMap, [[showOptionsCmd, OptionType.ShowOptions]]]));
       const resourceOptionsTags = resources.get(type).options ? Array.prototype.concat.apply([], resources.get(type).options.map(op => optionsCommands.get(op).commands)) : [];
 
-      const params: OptionType[] = fileName.split(' ')
-        .filter(t => resourceOptionsTags.includes(t) || t === showOptionsCmd)
-        .map(t => optionsMap.get(t));
+      const separators = ['--', ' -'];
+      const optionValuesSparator = ['=', ' '];
+      const filenameTokens = fileName.split(' ');
+      const optionsString = filenameTokens.slice(1, filenameTokens.length).join(' ');
+      [fileName] = filenameTokens;
 
-      [fileName] = fileName.split(' ');
+      const optionsTokens = optionsString.split(new RegExp(separators.join('|'), 'g'))
+        .filter(item => item.trim() !== '')
+        .map(item => item.trim())
+        .map(item => (item.length === 2) ?  item : '-' + item);
 
+      const params = optionsTokens
+        .filter((t) => {
+          const [option] = t.split(new RegExp(optionValuesSparator.join('|'), 'g'));
+          return resourceOptionsTags.includes(option) || option === showOptionsCmd;
+        })
+        .map((t) => {
+          const [key, value = 'True'] = t.split(new RegExp(optionValuesSparator.join('|'), 'g'));
+
+          return [optionsMap.get(key), value] as [OptionType, string];
+        });
+
+      const paramsMap = new Map<OptionType, string>(params);
       const fullPath = path.join(rootPath, fileName);
 
       if (fileName.indexOf('\\') !== -1) {
@@ -61,13 +78,15 @@ export const showFileNameDialog = async (args, type: ResourceType, defaultTypeNa
       }
       const dirPath = path.join(rootPath, dirName);
 
+
       return {
         fullPath,
         fileName,
         dirName,
         dirPath,
         rootPath,
-        params,
+        paramsMap,
+        params: [...paramsMap.keys()],
       };
     }
   }
@@ -103,7 +122,9 @@ export const showOptionsDialog = async (config: IConfig, loc: IPath, resource: R
     const [optionName, optionType] = option;
     const optionItem = optionsCommands.get(optionType);
     const resourceConfigPath = optionItem.configPath ? optionItem.configPath.replace('{resource}', resource.toLocaleLowerCase()) : '';
-    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) || '' : '';
+    const optionConfiguredDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) || '' : '';
+    const selectedValue = loc.paramsMap.has(optionType) ? loc.paramsMap.get(optionType) : '';
+    const optionDefaultValue = selectedValue || optionConfiguredDefaultValue;
 
     const displayValue = (optionDefaultValue && optionDefaultValue !== '') ? `${optionName} (default: ${optionDefaultValue})` : optionName;
     return { label: displayValue, description: optionItem.description, picked: loc.params.includes(optionType) } as vscode.QuickPickItem;
@@ -123,7 +144,7 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
-export const configureOptionsValues = async (config: IConfig, resource: ResourceType, optionTypes: OptionType[]): Promise<Map<OptionType, string>> => {
+export const configureOptionsValues = async (config: IConfig, loc: IPath, resource: ResourceType, optionTypes: OptionType[]): Promise<Map<OptionType, string>> => {
   const optionsValuesMap = new Map<OptionType, string>();
   await asyncForEach(optionTypes, async (ot) => {
     const optionItem = optionsCommands.get(ot);
@@ -134,7 +155,8 @@ export const configureOptionsValues = async (config: IConfig, resource: Resource
     const [firstItem = ''] = items;
     const sortedItems = firstItem.toLowerCase() === optionDefaultValue.toString().toLowerCase() ? items.reverse() : items;
 
-    const params = { placeHolder: `${command}: ${optionItem.description}` };
+    const selectedValue = loc.paramsMap.has(ot) ? loc.paramsMap.get(ot) : '';
+    const params = { placeHolder: `${command}: ${optionItem.description}`, value: selectedValue };
 
     const val = (optionItem.type) ? await vscode.window.showQuickPick(sortedItems, params) : await vscode.window.showInputBox(params);
     optionsValuesMap.set(ot, val);

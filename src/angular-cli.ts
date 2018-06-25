@@ -59,27 +59,62 @@ export class AngularCli {
     return data.substring(0, endOfLastImportInx) + `\nimport { ${fileNameUpper}${typeUpper} } from '${relativePath}/${fileName}.${type}';` + data.substring(endOfLastImportInx, fileLength);
   }
 
-  private addToArray(data: string, fileName: string, type: string, prop: string) {
-    const typeUpper = toUpperCase(type);
-    const fileNameUpper = toUpperCase(fileName);
 
-    const declarationLastInx = data.indexOf(']', data.indexOf(prop)) + 1;
+  private parseNgModule(data: string) {
+    const startPattern = '@NgModule(';
+    const endPattern = ')';
+    const startIndex = data.indexOf(startPattern) + startPattern.length;
+    const endIndex = data.indexOf(endPattern, startIndex);
+    const ngModuleStr = data.substring(startIndex, endIndex)
+      .replace('{', '')
+      .replace('}', '')
+      .split(' ')
+      .join('');
 
-    let before = data.substring(0, declarationLastInx);
-    const after = data.substring(declarationLastInx, data.length);
+    const before = data.substring(0, startIndex - startPattern.length);
+    const after = data.substring(endIndex + 1, data.length);
 
-    let lastDeclareInx = before.length - 1;
+    const ngModuleTokens = ngModuleStr.split('],');
 
-    while (before[lastDeclareInx] === ' ' ||
-      before[lastDeclareInx] === ',' ||
-      before[lastDeclareInx] === '\n' ||
-      before[lastDeclareInx] === ']') {
-      lastDeclareInx = lastDeclareInx - 1;
+    const ngModuleTokenPairs = ngModuleTokens.map((t) => {
+      const [key, val] = t.split(':');
+
+      const values = val.replace('[', '')
+        .replace(']', '')
+        .split(',')
+        .map(item => item.trim())
+        .filter(item => item !== '');
+
+      return [key.trim(), values] as [string, string[]];
+    });
+
+    const ngModuleMap = new Map<string, string[]>(ngModuleTokenPairs);
+
+    return {
+      data,
+      before,
+      after,
+      ngModuleMap,
+      toString: () => {
+        const obj = {};
+        ngModuleMap.forEach((value, key, map) => {
+          obj[key] = value;
+        });
+
+        const moduleStr = JSON.stringify(obj, null, 3).split(`"`).join('');
+        return before + `@NgModule(${moduleStr})` + after;
+      },
+    };
+  }
+
+  private addToArray(ngModule, fileName: string, type: string, prop: string) {
+    const item = `${toUpperCase(fileName)}${toUpperCase(type)}`;
+    if (ngModule.ngModuleMap.has(prop)) {
+      const items = ngModule.ngModuleMap.get(prop);
+      items.push(item);
+    } else {
+      ngModule.ngModuleMap.set(prop, [item]);
     }
-
-    before = before.substring(0, lastDeclareInx + 1) + ',\n    ';
-
-    return before + `${fileNameUpper}${typeUpper}\n]` + after;
   }
 
   private getRelativePath(dst: string, src: string) {
@@ -95,7 +130,7 @@ export class AngularCli {
 
     // at least one module is there
     if (moduleFiles.length > 0) {
-      moduleFiles.sort((a: string, b: string) => a.length - b.length);
+      moduleFiles.sort((a: string, b: string) => path.dirname(a).length - path.dirname(b).length);
 
       // find closest module      
       let [module] = moduleFiles;
@@ -116,12 +151,16 @@ export class AngularCli {
 
       // relativePath
       const relativePath = this.getRelativePath(module, loc.dirPath);
-      let content = this.addToImport(data, loc.fileName, type, relativePath);
-      content = this.addToArray(content, loc.fileName, type, 'declarations');
+      const content = this.addToImport(data, loc.fileName, type, relativePath);
+
+      const ngModule = this.parseNgModule(content);
+
+      this.addToArray(ngModule, loc.fileName, type, 'declarations');
       if (exports) {
-        content = this.addToArray(content, loc.fileName, type, 'exports');
+        this.addToArray(ngModule, loc.fileName, type, 'exports');
       }
-      await fsWriteFile(module, content);
+
+      await fsWriteFile(module, ngModule.toString());
     }
   }
 

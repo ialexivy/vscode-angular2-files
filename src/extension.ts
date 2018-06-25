@@ -21,13 +21,19 @@ export async function activate(context: ExtensionContext) {
 
   const showDynamicDialog = async (args, fileName: string, resource: ResourceType) => {
     const loc = await showFileNameDialog(args, resource, fileName);
+
     let resourceConfig = config;
+
     if (loc.params.includes(OptionType.ShowOptions)) {
       const selectedOptions = await showOptionsDialog(config, loc, resource);
       if (selectedOptions) {
-        const optionsValuesMap = await configureOptionsValues(config, resource, selectedOptions);
+        const optionsValuesMap = await configureOptionsValues(config, loc, resource, selectedOptions);
         loc.params = [...new Set([...loc.params, ...optionsValuesMap.keys()])];
         resourceConfig = mapConfigValues(config, resource, optionsValuesMap);
+      }
+    } else {
+      if (loc.paramsMap.size > 0) {
+        resourceConfig = mapConfigValues(config, resource, loc.paramsMap);
       }
     }
 

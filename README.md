@@ -8,12 +8,20 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.6.1
+* Fix module declaration and exports automatic import
+* Fix small issue with empty default values
+* Change module finding logic to ignore module name
+* Default options improvements
+
 ### 1.6.0
 You can now leverage angular-cli resource generation options without remembering their names, while keeping things simple and fast!
 
 * `"my-component -o"` - Use "-o" flag to specify which options to override
 * `"my-component --inline-style -t"` - Specify resource generation options without invoking options window
-* `"my-component --inline-style -o"` - Use can even use both modes together
+* `"my-component --inline-style --prefix dsdds -o"` - Use both modes together
+
+![](https://user-images.githubusercontent.com/1618071/41873503-cfe04250-78cd-11e8-8828-0073e219c4cc.jpg)
 
 Angular Files will automatically scan you angular.json to determine which default options you have already set and will let you to override them while displaying the current values
 

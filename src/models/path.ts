@@ -6,5 +6,6 @@ export interface IPath {
   dirPath: string;
   fullPath: string;
   rootPath: string;
+  paramsMap?: Map<OptionType, string>;
   params: OptionType[];
 }
