@@ -14,8 +14,8 @@ export const optionsCommands = new Map<OptionType, OptionItem>([
     [OptionType.Selector, { commands: ['--selector'], configPath: 'defaults.{resource}.selector', description: 'The selector to use for the component.' }],
     [OptionType.Module, { commands: ['--module', '-m'], configPath: 'defaults.{resource}.module', description: 'Allows specification of the declaring module.' }],
     [OptionType.Export, { commands: ['--export'], configPath: 'defaults.{resource}.export', type: 'True | False', description: 'Specifies if declaring module exports the component.' }],
-    [OptionType.Routing, { commands: ['--routing'], type: 'True | False', description: 'Generates a routing module.' }],
-    [OptionType.RoutingScope, { commands: ['--routing-scope'], type: 'Child | Root', description: 'The scope for the generated routing.' }],
+    [OptionType.Routing, { commands: ['--routing'], configPath: 'defaults.{resource}.routing', type: 'True | False', description: 'Generates a routing module.' }],
+    [OptionType.RoutingScope, { commands: ['--routing-scope'], configPath: 'defaults.{resource}.routingScope', type: 'Child | Root', description: 'The scope for the generated routing.' }],
     [OptionType.CommonModule, { commands: ['--common-module'], type: 'True | False', description: 'Flag to control whether the CommonModule is imported.' }],
     [OptionType.ShowOptions, { commands: ['-o'], description: 'Allow to override options' }],
 ]);

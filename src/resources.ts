@@ -12,7 +12,7 @@ export const resources = new Map<ResourceType, IResource>([
     { name: config => `component.html`, type: TemplateType.ComponentHtml },
     { name: config => `component.ts`, type: TemplateType.Component },
     { name: config => `module.ts`, type: TemplateType.Module },
-    { name: config => `-routing.module.ts`, type: TemplateType.ModuleRouting, condition: (config, params) => params.includes('routing') },
+    { name: config => `-routing.module.ts`, type: TemplateType.ModuleRouting, condition: (config, params) => config.defaults.module.routing },
     { name: config => `component.spec.ts`, type: TemplateType.ConponentSpec, condition: (config, params) => config.defaults.module.spec }],
     createFolder: config => !config.defaults.module.flat,
     options: [OptionType.Routing,

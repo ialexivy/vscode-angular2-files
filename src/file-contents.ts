@@ -9,7 +9,7 @@ import { TemplateType } from './enums/template-type';
 const fsReaddir = promisify(fs.readdir);
 const fsReadFile = promisify(fs.readFile);
 const TEMPLATES_FOLDER = 'templates';
-const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, cmpSelector, dirSelector, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, params';
+const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, cmpSelector, dirSelector, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, routingScope, params';
 
 export class FileContents {
   private templatesMap: Map<string, Function>;
@@ -46,6 +46,7 @@ export class FileContents {
     const cmpSelector = config.defaults.component.selector || `${cmpPrefix}-${inputName}`;
     const dirSelector = config.defaults.directive.selector || `${dirPrefix}${toUpperCase(inputName)}`;
     const styleExt = config.defaults.component.styleext || config.defaults.styleExt;
+    const routingScope = config.defaults.module.routingScope || 'Child';
 
     const args = [inputName,
       toUpperCase(inputName),
@@ -59,6 +60,7 @@ export class FileContents {
       config.defaults.component.inlineTemplate,
       config.defaults.component.inlineStyle,
       styleExt,
+      routingScope,
       params];
 
     return (this.templatesMap.has(templateName)) ? this.templatesMap.get(templateName)(...args) : '';

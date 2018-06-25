@@ -123,15 +123,20 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
-export const configureOptionsValues = async (optionTypes: OptionType[]): Promise<any> => {
+export const configureOptionsValues = async (config: IConfig, resource: ResourceType, optionTypes: OptionType[]): Promise<Map<OptionType, string>> => {
   const optionsValuesMap = new Map<OptionType, string>();
   await asyncForEach(optionTypes, async (ot) => {
     const optionItem = optionsCommands.get(ot);
+    const resourceConfigPath = optionItem.configPath ? optionItem.configPath.replace('{resource}', resource.toLocaleLowerCase()) : '';
+    const optionDefaultValue = (optionItem.configPath) ? deepValue(config, resourceConfigPath) : '';
     const [command] = optionItem.commands;
     const items = optionItem.type ? optionItem.type.split('|').map(item => item.trim()) : [];
+    const [firstItem] = items;
+    const sortedItems = firstItem.toLowerCase() === optionDefaultValue.toString().toLowerCase() ? items.reverse() : items;
+
     const params = { placeHolder: `${command}: ${optionItem.description}` };
 
-    const val = (optionItem.type) ? await vscode.window.showQuickPick(items, params) : await vscode.window.showInputBox(params);
+    const val = (optionItem.type) ? await vscode.window.showQuickPick(sortedItems, params) : await vscode.window.showInputBox(params);
     optionsValuesMap.set(ot, val);
   });
   return optionsValuesMap;

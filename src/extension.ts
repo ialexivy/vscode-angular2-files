@@ -25,7 +25,8 @@ export async function activate(context: ExtensionContext) {
     if (loc.params.includes(OptionType.ShowOptions)) {
       const selectedOptions = await showOptionsDialog(config, loc, resource);
       if (selectedOptions) {
-        const optionsValuesMap = await configureOptionsValues(selectedOptions);
+        const optionsValuesMap = await configureOptionsValues(config, resource, selectedOptions);
+        loc.params = [...new Set([...loc.params, ...optionsValuesMap.keys()])];
         resourceConfig = mapConfigValues(config, resource, optionsValuesMap);
       }
     }
