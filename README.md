@@ -20,6 +20,8 @@ You can now leverage angular-cli resource generation options without remembering
 * `"my-component -o"` - Use "-o" flag to specify which options to override
 * `"my-component --inline-style -t"` - Specify resource generation options without invoking options window
 * `"my-component --inline-style --prefix dsdds -o"` - Use both modes together
+![](https://user-images.githubusercontent.com/1618071/42040409-3706b35c-7af8-11e8-971b-5bc2bfddb9c3.gif)
+![](https://user-images.githubusercontent.com/1618071/42040410-37308272-7af8-11e8-89c7-dc239179b4a4.gif)
 
 ![](https://user-images.githubusercontent.com/1618071/41873503-cfe04250-78cd-11e8-8828-0073e219c4cc.jpg)
 
