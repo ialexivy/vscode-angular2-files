@@ -61,18 +61,19 @@ export class AngularCli {
 
 
   private parseNgModule(data: string) {
-    const startPattern = '@NgModule(';
-    const endPattern = ')';
+    const startPattern = '@NgModule({';
+    const endPattern = '})';
     const startIndex = data.indexOf(startPattern) + startPattern.length;
     const endIndex = data.indexOf(endPattern, startIndex);
-    const ngModuleStr = data.substring(startIndex, endIndex)
+    const ngModuleStr = data
+      .substring(startIndex, endIndex)
       .replace('{', '')
       .replace('}', '')
       .split(' ')
       .join('');
 
     const before = data.substring(0, startIndex - startPattern.length);
-    const after = data.substring(endIndex + 1, data.length);
+    const after = data.substring(endIndex + endPattern.length, data.length);
 
     const ngModuleTokens = ngModuleStr.split('],');
 
