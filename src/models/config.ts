@@ -26,6 +26,7 @@ export interface IApp {
 
 export interface IProperties {
   styleext?: string;
+  style?: string;
   skipImport?: boolean;
   flat?: boolean;
   spec?: boolean;
@@ -42,6 +43,7 @@ export interface IProperties {
 
 export interface IDefaults {
   styleExt: string;
+  style?: string;
   class?: IProperties;
   component?: IProperties;
   directive?: IProperties;

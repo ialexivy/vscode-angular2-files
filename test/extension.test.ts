@@ -11,11 +11,12 @@ import { IPath } from './../src/models/path';
 import { config as defaultConfig } from './../src/config/cli-config';
 import { resources } from './../src/resources';
 import { ResourceType } from './../src/enums/resource-type';
+import * as dJSON from 'dirty-json';
 
 chai.use(sinonChai);
 
 const expect = chai.expect;
-let config: IConfig = JSON.parse(JSON.stringify(defaultConfig));
+let config: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
 const testPath = path.join(__dirname, 'app');
 const angularCli = new AngularCli();
 
@@ -27,7 +28,7 @@ describe('Extension Tests:', () => {
   });
 
   beforeEach(() => {
-    config = JSON.parse(JSON.stringify(defaultConfig));
+    config = dJSON.parse(JSON.stringify(defaultConfig));
   });
 
   afterEach(() => {

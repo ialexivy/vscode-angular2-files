@@ -1,12 +1,11 @@
-import { IConfig } from './models/config';
-import { Uri, workspace, window } from 'vscode';
 import * as fs from 'fs';
-import * as path from 'path';
+import { window, workspace } from 'vscode';
 import { config as defaultConfig } from './config/cli-config';
-import { promisify } from './promisify';
 import deepMerge from './deep-merge';
+import { IConfig } from './models/config';
 import { AngularCliConfiguration } from './models/config-new';
-
+import { promisify } from './promisify';
+import * as dJSON from 'dirty-json';
 const readFileAsync = promisify(fs.readFile);
 
 export class ConfigurationManager {
@@ -15,7 +14,8 @@ export class ConfigurationManager {
 
   private async readConfigFile(): Promise<Object> {
     const files = await workspace.findFiles('{**/.angular-cli.json,**/angular.json}', '', 1);
-    this.currentRootPath = workspace.rootPath;
+    const [ws] = workspace.workspaceFolders;
+    this.currentRootPath = ws?.uri?.path;
     if (files.length > 0) {
       const [{ 'fsPath': filePath }] = files;
 
@@ -25,9 +25,9 @@ export class ConfigurationManager {
 
       // prevent parsing issues
       try {
-        config = JSON.parse(data);
+        config = dJSON.parse(data);
       } catch (ex) {
-        window.showErrorMessage('Invalid schema detected in .angular-cli.json, please correct and try again!');
+        window.showErrorMessage('Invalid schema detected in .angular.json, please correct and try again!');
         throw Error('Invalid schema');
       }
 
@@ -39,7 +39,7 @@ export class ConfigurationManager {
 
   private parseConfig(config): IConfig {
     if (config.hasOwnProperty('projects')) {
-      const oldConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
+      const oldConfig: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
       const newConfig = <AngularCliConfiguration>config;
 
       const globalConfig = this.parseSchematicsConfig(newConfig);
@@ -61,10 +61,13 @@ export class ConfigurationManager {
 
   private parseSchematicsConfig(cfg) {
     if (cfg && cfg.schematics) {
-      const templateConfig: IConfig = JSON.parse(JSON.stringify(defaultConfig));
+      const templateConfig: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
       const config = {
         defaults: {
           styleExt: '',
+          component: {
+            style: '',
+          },
         },
       };
 
@@ -81,7 +84,7 @@ export class ConfigurationManager {
         }
       }
 
-      config.defaults.styleExt = templateConfig.defaults.component.styleext || templateConfig.defaults.styleExt;
+      config.defaults.styleExt = config.defaults.component.style || templateConfig.defaults.component.styleext || templateConfig.defaults.styleExt;
 
       return config;
     }

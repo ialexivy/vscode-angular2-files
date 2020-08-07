@@ -8,18 +8,19 @@ import { FileContents } from './../src/file-contents';
 import { TemplateType } from './../src/enums/template-type';
 import { config as defaultConfig } from './../src/config/cli-config';
 import { IConfig } from '../src/models/config';
+import * as dJSON from 'dirty-json';
 
 chai.use(sinonChai);
 
 const expect = chai.expect;
-let config: IConfig = JSON.parse(JSON.stringify(defaultConfig));
+let config: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
 
 describe('File content tests', () => {
   const fc = new FileContents();
   fc.loadTemplates();
 
   beforeEach(() => {
-    config = JSON.parse(JSON.stringify(defaultConfig));
+    config = dJSON.parse(JSON.stringify(defaultConfig));
   });
 
   describe('Class tests', () => {

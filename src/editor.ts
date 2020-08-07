@@ -8,6 +8,7 @@ import { resources } from './resources';
 import { optionsCommands } from './option-commands';
 import { IConfig } from './models/config';
 import { OptionItem } from './models/option-item';
+import * as dJSON from 'dirty-json';
 
 export const displayStatusMessage = (type: string, name: string, timeout = 2000) => vscode.window.setStatusBarMessage(`${type} ${name} was successfully generated`, timeout);
 
@@ -178,10 +179,10 @@ const setToValue = (obj, value, path) => {
   localObj[localPath[i]] = value;
 };
 
-const parseOptionValue = value => ['True', 'False'].includes(value) ? JSON.parse(value.toLocaleLowerCase()) : value;
+const parseOptionValue = value => ['True', 'False'].includes(value) ? dJSON.parse(value.toLocaleLowerCase()) : value;
 
 export const mapConfigValues = (config: IConfig, resource: ResourceType, optionsValuesMap: Map<OptionType, string>) => {
-  const newConfig = JSON.parse(JSON.stringify(config));
+  const newConfig = dJSON.parse(JSON.stringify(config));
 
   optionsValuesMap.forEach((val, key) => {
     const optionItem = optionsCommands.get(key);
