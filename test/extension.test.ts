@@ -161,7 +161,7 @@ describe('Extension Tests:', () => {
       // tslint:disable-next-line:max-line-length
       const beforeModuleContent = `import { BrowserModule } from \'@angular/platform-browser\';\nimport { NgModule } from \'@angular/core\';\nimport { RouterModule, Routes } from \'@angular/router\';\n\nimport { AppComponent } from \'./app.component\';\nimport { AdminSettingsComponent } from \'./admin-settings/admin-settings.component\';\nimport { AdminLandingComponent } from \'./admin-landing/admin-landing.component\';\nimport { AdminSettingsGradeMarksComponent } from \'./admin-settings-grade-marks/admin-settings-grade-marks.component\';\n\nconst appRoutes: Routes = [\n  { path: \'settings/main\', component: AdminSettingsComponent },\n  { path: \'settings/grade-marks\', component: AdminSettingsGradeMarksComponent },\n  { path: \'\', component: AdminLandingComponent }\n];\n\n@NgModule({\n   declarations: [\n      AppComponent,\n      AdminSettingsComponent,\n      AdminLandingComponent,\n      AdminSettingsGradeMarksComponent\n   ],\n   imports: [\n      RouterModule.forRoot(appRoutes),\n      BrowserModule\n   ],\n   providers: [\n      RouterModule\n   ],\n   bootstrap: [\n      AppComponent\n   ]\n})\nexport class AppModule {}\n`;
       // tslint:disable-next-line:max-line-length
-      const afterModuleContent = `import { BrowserModule } from \'@angular/platform-browser\';\nimport { NgModule } from \'@angular/core\';\nimport { RouterModule, Routes } from \'@angular/router\';\n\nimport { AppComponent } from \'./app.component\';\nimport { AdminSettingsComponent } from \'./admin-settings/admin-settings.component\';\nimport { AdminLandingComponent } from \'./admin-landing/admin-landing.component\';\nimport { AdminSettingsGradeMarksComponent } from \'./admin-settings-grade-marks/admin-settings-grade-marks.component\';\nimport { JeffTestComponent } from \'./JeffTest/JeffTest.component\';\n\nconst appRoutes: Routes = [\n  { path: \'settings/main\', component: AdminSettingsComponent },\n  { path: \'settings/grade-marks\', component: AdminSettingsGradeMarksComponent },\n  { path: \'\', component: AdminLandingComponent }\n];\n\n@NgModule({\n   declarations: [\n      AppComponent,\n      AdminSettingsComponent,\n      AdminLandingComponent,\n      AdminSettingsGradeMarksComponent,\n      JeffTestComponent\n   ],\n   imports: [\n      RouterModule.forRoot(appRoutes),\n      BrowserModule\n   ],\n   providers: [\n      RouterModule\n   ],\n   bootstrap: [\n      AppComponent\n   ]\n})\nexport class AppModule {}\n`;
+      const afterModuleContent = "import { BrowserModule } from '@angular/platform-browser';\nimport { NgModule } from '@angular/core';\nimport { RouterModule, Routes } from '@angular/router';\n\nimport { AppComponent } from './app.component';\nimport { AdminSettingsComponent } from './admin-settings/admin-settings.component';\nimport { AdminLandingComponent } from './admin-landing/admin-landing.component';\nimport { AdminSettingsGradeMarksComponent } from './admin-settings-grade-marks/admin-settings-grade-marks.component';\nimport { JeffTestComponent } from './JeffTest/JeffTest.component';\n\nconst appRoutes: Routes = [\n  { path: 'settings/main', component: AdminSettingsComponent },\n  { path: 'settings/grade-marks', component: AdminSettingsGradeMarksComponent },\n  { path: '', component: AdminLandingComponent }\n];\n\n@NgModule({\n   declarations: [\t\n      AppComponent,\n      AdminSettingsComponent,\n      AdminLandingComponent,\n      AdminSettingsGradeMarksComponent,\n      JeffTestComponent\n   ],\n   imports: [\n      RouterModule.forRoot(appRoutes),\n      BrowserModule\n   ],\n   providers: [\n      RouterModule\n   ],\n   bootstrap: [\n      AppComponent\n   ]\n})\nexport class AppModule {}\n";
       const moduleLocation = Object.assign({}, { fullPath: path.join(testPath, 'my-module'), fileName: 'my-module', dirName: '', dirPath: testPath, rootPath: __dirname, params: [] });
       config.defaults.component.module = 'my-module';
       await angularCli.generateResources(ResourceType.Module, moduleLocation, config);
@@ -441,13 +441,12 @@ describe('Extension Tests:', () => {
     const files = getAllFiles(srcpath).filter(f => f.endsWith('.js'));
     files.forEach((file) => {
       const fileContent = fs.readFileSync(file, 'utf-8');
-      const lines = fileContent.split('\r\n').filter(f => f.includes('require('));
+      const lines = fileContent.split('\r\n').filter(f => f.includes('require(') && !f.includes('__esModule'));
       const requireLines = lines.map(line => regex.exec(line)[1]);
       requireLines.forEach((line) => {
         expect(line).to.be.eql(line.toLocaleLowerCase());
       });
     });
-
   });
 
   it('Should contain templates', async () => {

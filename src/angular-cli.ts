@@ -1,17 +1,15 @@
-import { window, workspace, TextEditor, commands, Uri, WorkspaceEdit } from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { IConfig } from './models/config';
-import { IPath } from './models/path';
-import { FileContents } from './file-contents';
-import { IFiles } from './models/file';
-import { promisify } from './promisify';
-import { toCamelCase, toUpperCase } from './formatting';
-import { createFiles, createFolder } from './ioutil';
-import { TemplateType } from './enums/template-type';
-import { resources } from './resources';
 import { ResourceType } from './enums/resource-type';
-import { OptionType } from './enums/option-type';
+import { FileContents } from './file-contents';
+import { toUpperCase } from './formatting';
+import { createFiles, createFolder } from './ioutil';
+import { IConfig } from './models/config';
+import { IFiles } from './models/file';
+import { IPath } from './models/path';
+import { addToImport, addToType } from './ng-module-utils';
+import { promisify } from './promisify';
+import { resources } from './resources';
 
 const fsWriteFile = promisify(fs.writeFile);
 const fsReaddir = promisify(fs.readdir);
@@ -53,69 +51,12 @@ export class AngularCli {
     const typeUpper = toUpperCase(type);
     const fileNameUpper = toUpperCase(fileName);
 
-    const lastImportInx = data.lastIndexOf('import ');
-    const endOfLastImportInx = data.indexOf('\n', lastImportInx);
-    const fileLength = data.length;
-    return data.substring(0, endOfLastImportInx) + `\nimport { ${fileNameUpper}${typeUpper} } from '${relativePath}/${fileName}.${type}';` + data.substring(endOfLastImportInx, fileLength);
+    return addToImport(data, `import { ${fileNameUpper}${typeUpper} } from '${relativePath}/${fileName}.${type}';`);
   }
 
-
-  private parseNgModule(data: string) {
-    const startPattern = '@NgModule({';
-    const endPattern = '})';
-    const startIndex = data.indexOf(startPattern) + startPattern.length;
-    const endIndex = data.indexOf(endPattern, startIndex);
-    const ngModuleStr = data
-      .substring(startIndex, endIndex)
-      .replace('{', '')
-      .replace('}', '')
-      .split(' ')
-      .join('');
-
-    const before = data.substring(0, startIndex - startPattern.length);
-    const after = data.substring(endIndex + endPattern.length, data.length);
-
-    const ngModuleTokens = ngModuleStr.split('],');
-
-    const ngModuleTokenPairs = ngModuleTokens.map((t) => {
-      const [key, val] = t.split(':');
-
-      const values = val.replace('[', '')
-        .replace(']', '')
-        .split(',')
-        .map(item => item.trim())
-        .filter(item => item !== '');
-
-      return [key.trim(), values] as [string, string[]];
-    });
-
-    const ngModuleMap = new Map<string, string[]>(ngModuleTokenPairs);
-
-    return {
-      data,
-      before,
-      after,
-      ngModuleMap,
-      toString: () => {
-        const obj = {};
-        ngModuleMap.forEach((value, key, map) => {
-          obj[key] = value;
-        });
-
-        const moduleStr = JSON.stringify(obj, null, 3).split(`"`).join('');
-        return before + `@NgModule(${moduleStr})` + after;
-      },
-    };
-  }
-
-  private addToArray(ngModule, fileName: string, type: string, prop: string) {
+  private addToArray(content, fileName: string, type: string, prop: string) {
     const item = `${toUpperCase(fileName)}${toUpperCase(type)}`;
-    if (ngModule.ngModuleMap.has(prop)) {
-      const items = ngModule.ngModuleMap.get(prop);
-      items.push(item);
-    } else {
-      ngModule.ngModuleMap.set(prop, [item]);
-    }
+    return addToType(content, prop, item);
   }
 
   private getRelativePath(dst: string, src: string) {
@@ -152,16 +93,14 @@ export class AngularCli {
 
       // relativePath
       const relativePath = this.getRelativePath(module, loc.dirPath);
-      const content = this.addToImport(data, loc.fileName, type, relativePath);
+      let content = this.addToImport(data, loc.fileName, type, relativePath);
 
-      const ngModule = this.parseNgModule(content);
-
-      this.addToArray(ngModule, loc.fileName, type, 'declarations');
+      content = this.addToArray(content, loc.fileName, type, 'declarations');
       if (exports) {
-        this.addToArray(ngModule, loc.fileName, type, 'exports');
+        content = this.addToArray(content, loc.fileName, type, 'exports');
       }
 
-      await fsWriteFile(module, ngModule.toString());
+      await fsWriteFile(module, content);
     }
   }
 
