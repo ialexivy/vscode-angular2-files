@@ -69,7 +69,8 @@ const addToType = (data: string, type: string, str: string) => {
 
 const addToImport = (data: string, str: string) => {
   const lastImportInx = data.lastIndexOf('import ');
-  const endOfLastImportInx = data.indexOf('\n', lastImportInx);
+  const lastImportEndInx = data.indexOf('from', lastImportInx);
+  const endOfLastImportInx = data.indexOf('\n', lastImportEndInx);
   const fileLength = data.length;
   return data.substring(0, endOfLastImportInx) + `\n${str}` + data.substring(endOfLastImportInx, fileLength);
 }
