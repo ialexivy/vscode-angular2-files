@@ -8,6 +8,11 @@ This extension allows **quickly scaffold angular 2 file templates** in VS Code p
 
 ## Changelog
 
+### 1.6.4
+* Fixed issues with module imports
+* Fixed issues with comments while imporing in module
+* Fixed issues with style extensions
+
 ### 1.6.2
 * Fixed issue with module import
 
