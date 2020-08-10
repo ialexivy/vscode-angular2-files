@@ -73,4 +73,9 @@ export interface SchematicOptions {
   [k: string]: {
     [k: string]: any;
   };
+  '@schematics/angular:resolver'?: {
+    flat?: boolean;
+    spec?: boolean;
+    [k: string]: any;
+  };
 }

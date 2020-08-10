@@ -7,6 +7,7 @@ export const commandsMap = new Map<CommandType, ICommand>([
   [CommandType.Directive, { fileName: 'my-directive', resource: ResourceType.Directive }],
   [CommandType.Pipe, { fileName: 'my-pipe', resource: ResourceType.Pipe }],
   [CommandType.Service, { fileName: 'my-service', resource: ResourceType.Service }],
+  [CommandType.Resolver, { fileName: 'my-resolver', resource: ResourceType.Resolver }],
   [CommandType.Class, { fileName: 'my-class', resource: ResourceType.Class }],
   [CommandType.Interface, { fileName: 'my-interface', resource: ResourceType.Interface }],
   [CommandType.Route, { fileName: 'my-route', resource: ResourceType.Route }],

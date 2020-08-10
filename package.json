@@ -90,6 +90,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Shows or hides the menu item."
+                },
+                "angular2-files.menu.resolver": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Shows or hides the menu item."
                 }
             }
         },
@@ -129,6 +134,10 @@
             {
                 "command": "extension.addAngular2Module",
                 "title": "Generate Module"
+            },
+            {
+                "command": "extension.addAngular2Resolver",
+                "title": "Generate Resolver"
             }
         ],
         "menus": {
@@ -176,6 +185,11 @@
                 {
                     "when": "config.angular2-files.menu.enum",
                     "command": "extension.addAngular2Enum",
+                    "group": "Angular2 Essentials"
+                },
+                {
+                    "when": "config.angular2-files.menu.resolver",
+                    "command": "extension.addAngular2Resolver",
                     "group": "Angular2 Essentials"
                 }
             ]

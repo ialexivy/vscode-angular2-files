@@ -52,6 +52,7 @@ export interface IDefaults {
   module?: IProperties;
   pipe?: IProperties;
   service?: IProperties;
+  resolver?: IProperties;
 }
 
 export interface IConfig {

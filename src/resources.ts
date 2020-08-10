@@ -44,6 +44,16 @@ export const resources = new Map<ResourceType, IResource>([
     options: [OptionType.Flat,
       OptionType.Spec],
   }],
+  [ResourceType.Resolver, {
+    locDirName: (loc, config) => (!config.defaults.resolver.flat) ? loc.fileName : loc.dirName,
+    locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),
+    files: [
+      { name: config => `resolver.ts`, type: TemplateType.Resolver, condition: (config, params) => config.version === 'ng6' },
+    ],
+    createFolder: config => !config.defaults.resolver.flat,
+    options: [OptionType.Flat,
+      OptionType.Spec],
+  }],
   [ResourceType.Pipe, {
     locDirName: (loc, config) => (!config.defaults.pipe.flat) ? loc.fileName : loc.dirName,
     locDirPath: (loc, config) => path.join(loc.dirPath, loc.dirName),

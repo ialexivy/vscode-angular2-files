@@ -17,4 +17,5 @@ export enum TemplateType {
     Enum = 'enum.tmpl',
     Inteface = 'interface.tmpl',
     Route = 'route.tmpl',
+    Resolver = 'resolver.tmpl'
 }
