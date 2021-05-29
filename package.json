@@ -190,7 +190,7 @@
                     "command": "extension.addAngular2Enum",
                     "group": "Angular2 Essentials"
                 }
-            ]           
+            ]
         }
     },
     "devDependencies": {
