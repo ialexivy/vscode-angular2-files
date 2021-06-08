@@ -140,8 +140,20 @@
                 "title": "Generate Resolver"
             }
         ],
+        "submenus": [
+            {
+                "id": "angular2files",
+                "label": "Angular Files"
+            }
+        ],
         "menus": {
-            "explorer/context": [
+            "explorer/context": [                
+                {
+                    "submenu": "angular2files",
+                    "group": "1_Angular2files"
+                }
+            ],
+            "angular2files": [
                 {
                     "when": "config.angular2-files.menu.component",
                     "command": "extension.addAngular2Component",
