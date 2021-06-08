@@ -53,5 +53,9 @@ export const config: IConfig = {
       flat: true,
       spec: true,
     },
+    resolver: {
+      flat: true,
+      spec: false,
+    },
   },
 };
