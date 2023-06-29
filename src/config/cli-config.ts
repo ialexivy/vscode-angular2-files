@@ -7,7 +7,6 @@ export const config: IConfig = {
     prefix: 'app',
   }],
   defaults: {
-    styleExt: 'css',
     style: 'css',
     component: {
       spec: true,
@@ -16,7 +15,6 @@ export const config: IConfig = {
       flat: false,
       changeDetection: 'Default',
       viewEncapsulation: 'Emulated',
-      styleext: null,
       style: null,
       prefix: null,
       skipImport: false,

@@ -43,7 +43,11 @@ export class ConfigurationManager {
       const newConfig = <AngularCliConfiguration>config;
 
       const globalConfig = this.parseSchematicsConfig(newConfig);
-      const project = newConfig.projects[newConfig.defaultProject];
+      let projectName = newConfig.defaultProject;
+      if(newConfig.defaultProject==null){
+        projectName = Object.keys(newConfig.projects)[0];
+      }
+      const project = newConfig.projects[projectName];
       const projectConfig = this.parseSchematicsConfig(project);
       const prefix = project ? project.prefix : null;
       oldConfig.apps[0].prefix = prefix || oldConfig.apps[0].prefix;
@@ -51,7 +55,7 @@ export class ConfigurationManager {
       // replace global config with project config
       deepMerge(oldConfig, globalConfig, projectConfig);
 
-      oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
+      oldConfig.defaults.style = oldConfig.defaults.component.style || oldConfig.defaults.style;
       oldConfig.version = 'ng6';
       return oldConfig;
     }
@@ -64,7 +68,7 @@ export class ConfigurationManager {
       const templateConfig: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
       const config = {
         defaults: {
-          styleExt: '',
+          style: '',
           component: {
             style: '',
           },
@@ -84,7 +88,7 @@ export class ConfigurationManager {
         }
       }
 
-      config.defaults.styleExt = config.defaults.component.style || templateConfig.defaults.component.styleext || templateConfig.defaults.styleExt;
+      config.defaults.style = config.defaults.component.style || templateConfig.defaults.component.style || templateConfig.defaults.style;
 
       return config;
     }

@@ -25,7 +25,7 @@ export interface SchematicOptions {
     viewEncapsulation?: ('Emulated' | 'Native' | 'None');
     changeDetection?: ('Default' | 'OnPush');
     prefix?: string;
-    styleext?: string;
+    style?: string;
     spec?: boolean;
     flat?: boolean;
     skipImport?: boolean;

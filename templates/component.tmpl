@@ -3,7 +3,7 @@ import { Component, OnInit${componentViewEncapsulation !== 'Emulated' ? ', ViewE
 @Component({
   selector: '${cmpSelector}',
   ${componentInlineTemplate ? `template: \`\n   <p>\n  \t\t${inputName} Works!\n   </p>\n  \`` : `templateUrl: './${inputName}.component.html'`},
-  ${componentInlineStyle ? 'styles: []' : `styleUrls: ['./${inputName}.component.${defaultsStyleExt}']`}${componentViewEncapsulation !== 'Emulated' ? `,\n  encapsulation: ViewEncapsulation.${componentViewEncapsulation}` : ''}${componentChangeDetection !== 'Default' ? `,\n  changeDetection: ChangeDetectionStrategy.OnPush` : ''}
+  ${componentInlineStyle ? 'styles: []' : `styleUrls: ['./${inputName}.component.${defaultsStyle}']`}${componentViewEncapsulation !== 'Emulated' ? `,\n  encapsulation: ViewEncapsulation.${componentViewEncapsulation}` : ''}${componentChangeDetection !== 'Default' ? `,\n  changeDetection: ChangeDetectionStrategy.OnPush` : ''}
 })
 export class ${upperName}Component implements OnInit {
 

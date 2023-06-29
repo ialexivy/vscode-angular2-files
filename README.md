@@ -93,7 +93,7 @@ Angular Files will automatically scan you angular.json to determine which defaul
 
 ```json
     "defaults": {
-        "styleExt": "css",
+        "style": "css",
         "component": {
             "spec": true,
             "inlineStyle": false,
@@ -203,7 +203,7 @@ New Enum      |
       }
    ],
    "defaults":{
-      "styleExt":"css"
+      "style":"css"
    }
 }
 ```
