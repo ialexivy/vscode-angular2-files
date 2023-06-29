@@ -9,7 +9,7 @@ import { TemplateType } from './enums/template-type';
 const fsReaddir = promisify(fs.readdir);
 const fsReadFile = promisify(fs.readFile);
 const TEMPLATES_FOLDER = 'templates';
-const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, cmpSelector, dirSelector, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyleExt, routingScope, importCommonModule, params';
+const TEMPLATE_ARGUMENTS = 'inputName, upperName, interfacePrefix, cmpPrefix, dirPrefix, cmpSelector, dirSelector, componentViewEncapsulation, componentChangeDetection, componentInlineTemplate, componentInlineStyle, defaultsStyle, routingScope, importCommonModule, params';
 
 export class FileContents {
   private templatesMap: Map<string, Function>;
@@ -45,7 +45,7 @@ export class FileContents {
     const dirPrefix = config.defaults.directive.prefix || app.prefix;
     const cmpSelector = config.defaults.component.selector || `${cmpPrefix}-${inputName}`;
     const dirSelector = config.defaults.directive.selector || `${dirPrefix}${toUpperCase(inputName)}`;
-    const styleExt = config.defaults.component.styleext || config.defaults.styleExt;
+    const style = config.defaults.component.style || config.defaults.style;
     const routingScope = config.defaults.module.routingScope || 'Child';
     const importCommonModule = config.defaults.module.commonModule;
 
@@ -60,7 +60,7 @@ export class FileContents {
       config.defaults.component.changeDetection,
       config.defaults.component.inlineTemplate,
       config.defaults.component.inlineStyle,
-      styleExt,
+      style,
       routingScope,
       importCommonModule,
       params];

@@ -5,7 +5,7 @@ export enum OptionType {
     ViewEncapsulation = 'ViewEncapsulation',
     ChangeDetection = 'ChangeDetection',
     Prefix = 'Prefix',
-    Styleext = 'Styleext',
+    Style = 'Style',
     Spec = 'Spec',
     Flat = 'Flat',
     SkipImport = 'SkipImport',

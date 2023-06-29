@@ -85,7 +85,7 @@ describe('Extension Tests:', () => {
     it('Should generate component without style', async () => {
       config.defaults.component.inlineStyle = true;
       const location = Object.assign({}, myPath);
-      const checkNoStyleFile = arr => arr.every(item => !item.endsWith(`.${config.defaults.styleExt}`));
+      const checkNoStyleFile = arr => arr.every(item => !item.endsWith(`.${config.defaults.style}`));
 
       const result = await angularCli.generateResources(ResourceType.Component, location, config);
 

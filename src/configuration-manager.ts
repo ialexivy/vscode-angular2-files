@@ -51,7 +51,7 @@ export class ConfigurationManager {
       // replace global config with project config
       deepMerge(oldConfig, globalConfig, projectConfig);
 
-      oldConfig.defaults.styleExt = oldConfig.defaults.component.styleext || oldConfig.defaults.styleExt;
+      oldConfig.defaults.style = oldConfig.defaults.component.style || oldConfig.defaults.style;
       oldConfig.version = 'ng6';
       return oldConfig;
     }
@@ -64,7 +64,7 @@ export class ConfigurationManager {
       const templateConfig: IConfig = dJSON.parse(JSON.stringify(defaultConfig));
       const config = {
         defaults: {
-          styleExt: '',
+          style: '',
           component: {
             style: '',
           },
@@ -84,7 +84,7 @@ export class ConfigurationManager {
         }
       }
 
-      config.defaults.styleExt = config.defaults.component.style || templateConfig.defaults.component.styleext || templateConfig.defaults.styleExt;
+      config.defaults.style = config.defaults.component.style || templateConfig.defaults.component.style || templateConfig.defaults.style;
 
       return config;
     }
