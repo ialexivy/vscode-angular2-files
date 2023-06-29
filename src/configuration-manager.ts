@@ -43,7 +43,11 @@ export class ConfigurationManager {
       const newConfig = <AngularCliConfiguration>config;
 
       const globalConfig = this.parseSchematicsConfig(newConfig);
-      const project = newConfig.projects[newConfig.defaultProject];
+      let projectName = newConfig.defaultProject;
+      if(newConfig.defaultProject==null){
+        projectName = Object.keys(newConfig.projects)[0];
+      }
+      const project = newConfig.projects[projectName];
       const projectConfig = this.parseSchematicsConfig(project);
       const prefix = project ? project.prefix : null;
       oldConfig.apps[0].prefix = prefix || oldConfig.apps[0].prefix;
